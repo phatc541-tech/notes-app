@@ -1,8 +1,12 @@
 import { useEffect, useState } from "react";
 
+import { useNavigate } from "react-router-dom";
+
 import api from "../services/api";
 
 function Home() {
+
+  const navigate = useNavigate();
 
   // =========================
   // STATES
@@ -31,6 +35,18 @@ function Home() {
   const token = localStorage.getItem("token");
 
   // =========================
+  // LOGOUT
+  // =========================
+
+  const logout = () => {
+
+    localStorage.removeItem("token");
+
+    navigate("/login");
+
+  };
+
+  // =========================
   // GET NOTES
   // =========================
 
@@ -57,7 +73,25 @@ function Home() {
   };
 
   // =========================
-  // AUTO SAVE
+  // LOAD NOTES
+  // =========================
+
+  useEffect(() => {
+
+    if (!token) {
+
+      navigate("/login");
+
+    } else {
+
+      getNotes();
+
+    }
+
+  }, []);
+
+  // =========================
+  // AUTOSAVE
   // =========================
 
   useEffect(() => {
@@ -91,7 +125,7 @@ function Home() {
           }
         );
 
-        getNotes();
+        await getNotes();
 
         setLoading(false);
 
@@ -107,7 +141,7 @@ function Home() {
 
     return () => clearTimeout(timeout);
 
-  }, [title, content, labels]);
+  }, [title, content]);
 
   // =========================
   // DELETE NOTE
@@ -136,27 +170,6 @@ function Home() {
   };
 
   // =========================
-  // LOGOUT
-  // =========================
-
-  const handleLogout = () => {
-
-    localStorage.removeItem("token");
-
-    window.location.href = "/login";
-  };
-
-  // =========================
-  // LOAD NOTES
-  // =========================
-
-  useEffect(() => {
-
-    getNotes();
-
-  }, []);
-
-  // =========================
   // FILTER NOTES
   // =========================
 
@@ -183,10 +196,11 @@ function Home() {
       note.labels?.includes(selectedLabel);
 
     return matchSearch && matchLabel;
+
   });
 
   // =========================
-  // UNIQUE LABELS
+  // ALL LABELS
   // =========================
 
   const allLabels = [
@@ -217,15 +231,27 @@ function Home() {
         }}
       >
 
-        <h1>My Notes</h1>
+        <div>
+
+          <h1>My Notes</h1>
+
+          <h2
+            style={{
+              color: "red"
+            }}
+          >
+            NEW VERSION
+          </h2>
+
+        </div>
 
         <button
-          onClick={handleLogout}
+          onClick={logout}
           style={{
             background: "red",
             color: "white",
             border: "none",
-            padding: "10px",
+            padding: "10px 20px",
             borderRadius: "5px"
           }}
         >
@@ -265,9 +291,9 @@ function Home() {
           onChange={(e) =>
             setContent(e.target.value)
           }
+          rows="10"
           style={{
             width: "100%",
-            height: "150px",
             padding: "10px"
           }}
         />
@@ -291,11 +317,11 @@ function Home() {
         <br />
         <br />
 
-        {
-          loading
-            ? <p>Auto Saving...</p>
-            : <p>Saved</p>
-        }
+        <p>
+          {loading
+            ? "Auto Saving..."
+            : "Saved"}
+        </p>
 
       </div>
 
@@ -315,7 +341,7 @@ function Home() {
         }}
       />
 
-      {/* LABEL FILTER */}
+      {/* FILTER LABEL */}
 
       <div
         style={{
@@ -327,6 +353,14 @@ function Home() {
           onClick={() =>
             setSelectedLabel("")
           }
+          style={{
+            background: "#2563eb",
+            color: "white",
+            border: "none",
+            padding: "10px 20px",
+            borderRadius: "5px",
+            marginRight: "10px"
+          }}
         >
           All
         </button>
@@ -341,10 +375,16 @@ function Home() {
                 setSelectedLabel(label)
               }
               style={{
-                marginLeft: "10px"
+                background: "#16a34a",
+                color: "white",
+                border: "none",
+                padding: "10px 20px",
+                borderRadius: "5px",
+                marginRight: "10px",
+                marginTop: "10px"
               }}
             >
-              #{label}
+              {label}
             </button>
 
           ))
@@ -365,6 +405,14 @@ function Home() {
           onClick={() =>
             setViewMode("list")
           }
+          style={{
+            background: "#2563eb",
+            color: "white",
+            border: "none",
+            padding: "10px 20px",
+            borderRadius: "5px",
+            cursor: "pointer"
+          }}
         >
           List
         </button>
@@ -374,7 +422,13 @@ function Home() {
             setViewMode("grid")
           }
           style={{
-            marginLeft: "10px"
+            background: "#16a34a",
+            color: "white",
+            border: "none",
+            padding: "10px 20px",
+            borderRadius: "5px",
+            marginLeft: "10px",
+            cursor: "pointer"
           }}
         >
           Grid
@@ -386,97 +440,94 @@ function Home() {
 
       <div
         style={{
-
           display: "grid",
-
           gridTemplateColumns:
-
             viewMode === "grid"
-              ? "repeat(3,1fr)"
+              ? "repeat(3, 1fr)"
               : "1fr",
-
           gap: "20px"
         }}
       >
 
         {
 
-          filteredNotes.map((note) => (
+          filteredNotes.length > 0 ? (
 
-            <div
-              key={note._id}
-              style={{
-                border: "1px solid #ccc",
-                padding: "20px",
-                borderRadius: "10px"
-              }}
-            >
+            filteredNotes.map((note) => (
 
-              <h2>{note.title}</h2>
+              <div
+                key={note._id}
+                style={{
+                  border: "1px solid #ccc",
+                  padding: "15px",
+                  borderRadius: "10px"
+                }}
+              >
 
-              <p>{note.content}</p>
+                <h2>
+                  {note.title}
+                </h2>
 
-              {/* LABELS */}
+                <p>
+                  {note.content}
+                </p>
 
-              <div>
+                <div>
 
-                {
+                  {
 
-                  note.labels?.map((label) => (
+                    note.labels?.map(
+                      (label) => (
 
-                    <span
-                      key={label}
-                      style={{
-                        background: "#eee",
-                        padding: "5px 10px",
-                        borderRadius: "20px",
-                        marginRight: "10px",
-                        fontSize: "12px"
-                      }}
-                    >
-                      #{label}
-                    </span>
+                        <span
+                          key={label}
+                          style={{
+                            background: "#ddd",
+                            padding: "5px 10px",
+                            borderRadius: "20px",
+                            marginRight: "10px"
+                          }}
+                        >
+                          {label}
+                        </span>
 
-                  ))
+                      )
+                    )
 
-                }
+                  }
+
+                </div>
+
+                <br />
+
+                <button
+                  onClick={() =>
+                    deleteNote(note._id)
+                  }
+                  style={{
+                    background: "red",
+                    color: "white",
+                    border: "none",
+                    padding: "10px",
+                    borderRadius: "5px"
+                  }}
+                >
+                  Delete
+                </button>
 
               </div>
 
-              <br />
+            ))
 
-              <button
-                onClick={() =>
-                  deleteNote(note._id)
-                }
-                style={{
-                  background: "red",
-                  color: "white",
-                  border: "none",
-                  padding: "10px",
-                  borderRadius: "5px"
-                }}
-              >
-                Delete
-              </button>
+          ) : (
 
-            </div>
+            <p>No notes found</p>
 
-          ))
+          )
 
         }
 
       </div>
-
-      {
-
-        filteredNotes.length === 0 && (
-
-          <p>No notes found</p>
-
-        )
-
-      }
 
     </div>
   );
