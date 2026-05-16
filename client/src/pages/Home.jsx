@@ -1,31 +1,51 @@
 import { useEffect, useState } from "react";
 
-import { useNavigate } from "react-router-dom";
-
 import api from "../services/api";
 
 function Home() {
 
-  const navigate = useNavigate();
+  // =========================
+  // STATES
+  // =========================
+
+  const [notes, setNotes] = useState([]);
 
   const [title, setTitle] = useState("");
 
   const [content, setContent] = useState("");
 
-  const [notes, setNotes] = useState([]);
+  const [labels, setLabels] = useState("");
 
   const [search, setSearch] = useState("");
 
-  const [view, setView] = useState("grid");
+  const [selectedLabel, setSelectedLabel] = useState("");
 
-  const [editId, setEditId] = useState(null);
+  const [viewMode, setViewMode] = useState("list");
 
-  // get notes
+  const [loading, setLoading] = useState(false);
+
+  // =========================
+  // TOKEN
+  // =========================
+
+  const token = localStorage.getItem("token");
+
+  // =========================
+  // GET NOTES
+  // =========================
+
   const getNotes = async () => {
 
     try {
 
-      const res = await api.get("/notes");
+      const res = await api.get(
+        "/notes",
+        {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        }
+      );
 
       setNotes(res.data);
 
@@ -36,50 +56,50 @@ function Home() {
     }
   };
 
-  // autosave
+  // =========================
+  // AUTO SAVE
+  // =========================
+
   useEffect(() => {
 
-    if (!title && !content) return;
+    if (
+      title.trim() === "" &&
+      content.trim() === ""
+    ) {
+      return;
+    }
+
+    setLoading(true);
 
     const timeout = setTimeout(async () => {
 
       try {
 
-        // update
-        if (editId) {
-
-          await api.put(`/notes/${editId}`, {
-
+        await api.post(
+          "/notes",
+          {
             title,
-            content
-
-          });
-
-          console.log("updated");
-
-        }
-
-        // create
-        else {
-
-          const res = await api.post("/notes", {
-
-            title,
-            content
-
-          });
-
-          setEditId(res.data._id);
-
-          console.log("created");
-
-        }
+            content,
+            labels: labels
+              .split(",")
+              .map((item) => item.trim())
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${token}`
+            }
+          }
+        );
 
         getNotes();
+
+        setLoading(false);
 
       } catch (error) {
 
         console.log(error);
+
+        setLoading(false);
 
       }
 
@@ -87,20 +107,24 @@ function Home() {
 
     return () => clearTimeout(timeout);
 
-  }, [title, content]);
+  }, [title, content, labels]);
 
-  // delete
-  const handleDelete = async (id) => {
+  // =========================
+  // DELETE NOTE
+  // =========================
 
-    const ok = window.confirm(
-      "Delete this note?"
-    );
-
-    if (!ok) return;
+  const deleteNote = async (id) => {
 
     try {
 
-      await api.delete(`/notes/${id}`);
+      await api.delete(
+        `/notes/${id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        }
+      );
 
       getNotes();
 
@@ -111,332 +135,348 @@ function Home() {
     }
   };
 
-  // pin
-  const handlePin = async (id) => {
+  // =========================
+  // LOGOUT
+  // =========================
 
-    try {
-
-      await api.put(`/notes/pin/${id}`);
-
-      getNotes();
-
-    } catch (error) {
-
-      console.log(error);
-
-    }
-  };
-
-  // logout
   const handleLogout = () => {
 
     localStorage.removeItem("token");
 
-    navigate("/login");
-
+    window.location.href = "/login";
   };
 
-  // check login
+  // =========================
+  // LOAD NOTES
+  // =========================
+
   useEffect(() => {
 
-    const token = localStorage.getItem("token");
-
-    if (!token) {
-
-      navigate("/login");
-
-    }
-
-    else {
-
-      getNotes();
-
-    }
+    getNotes();
 
   }, []);
 
-  // search
-  const filteredNotes = notes.filter((item) =>
+  // =========================
+  // FILTER NOTES
+  // =========================
 
-    item.title.toLowerCase().includes(
-      search.toLowerCase()
-    ) ||
+  const filteredNotes = notes.filter((note) => {
 
-    item.content.toLowerCase().includes(
-      search.toLowerCase()
+    const matchSearch =
+
+      note.title
+        .toLowerCase()
+        .includes(search.toLowerCase())
+
+      ||
+
+      note.content
+        .toLowerCase()
+        .includes(search.toLowerCase());
+
+    const matchLabel =
+
+      selectedLabel === ""
+
+      ||
+
+      note.labels?.includes(selectedLabel);
+
+    return matchSearch && matchLabel;
+  });
+
+  // =========================
+  // UNIQUE LABELS
+  // =========================
+
+  const allLabels = [
+
+    ...new Set(
+      notes.flatMap(
+        (note) => note.labels || []
+      )
     )
 
-  );
+  ];
 
   return (
 
-    <div className="bg-gray-100 min-h-screen p-5">
+    <div
+      style={{
+        padding: "20px"
+      }}
+    >
 
-      <div className="max-w-6xl mx-auto">
+      {/* HEADER */}
 
-        {/* top */}
-        <div className="flex justify-between items-center mb-5">
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center"
+        }}
+      >
 
-          <h1 className="text-4xl font-bold">
-            My Notes
-          </h1>
+        <h1>My Notes</h1>
 
-          <button
+        <button
+          onClick={handleLogout}
+          style={{
+            background: "red",
+            color: "white",
+            border: "none",
+            padding: "10px",
+            borderRadius: "5px"
+          }}
+        >
+          Logout
+        </button>
 
-            onClick={handleLogout}
+      </div>
 
-            className="
-              bg-red-500
-              text-white
-              p-2
-              rounded
-            "
-          >
-            Logout
-          </button>
+      {/* CREATE NOTE */}
 
-        </div>
+      <div
+        style={{
+          border: "1px solid #ccc",
+          padding: "20px",
+          borderRadius: "10px",
+          marginBottom: "20px"
+        }}
+      >
 
-        {/* create */}
-        <div className="bg-white p-5 rounded shadow mb-5">
-
-          <input
-
-            type="text"
-
-            placeholder="Title"
-
-            value={title}
-
-            onChange={(e) =>
-              setTitle(e.target.value)
-            }
-
-            className="
-              w-full
-              border
-              p-3
-              rounded
-              mb-3
-            "
-
-          />
-
-          <textarea
-
-            placeholder="Content"
-
-            value={content}
-
-            onChange={(e) =>
-              setContent(e.target.value)
-            }
-
-            className="
-              w-full
-              border
-              p-3
-              rounded
-              h-40
-            "
-
-          />
-
-          <p className="text-gray-500 mt-2">
-            Auto Saving...
-          </p>
-
-        </div>
-
-        {/* search */}
         <input
-
           type="text"
-
-          placeholder="Search..."
-
-          value={search}
-
+          placeholder="Title"
+          value={title}
           onChange={(e) =>
-            setSearch(e.target.value)
+            setTitle(e.target.value)
           }
-
-          className="
-            w-full
-            border
-            p-3
-            rounded
-            mb-5
-          "
-
+          style={{
+            width: "100%",
+            padding: "10px",
+            marginBottom: "10px"
+          }}
         />
 
-        {/* buttons */}
-        <div className="mb-5">
+        <textarea
+          placeholder="Content"
+          value={content}
+          onChange={(e) =>
+            setContent(e.target.value)
+          }
+          style={{
+            width: "100%",
+            height: "150px",
+            padding: "10px"
+          }}
+        />
 
-          <button
+        <br />
+        <br />
 
-            onClick={() => setView("list")}
+        <input
+          type="text"
+          placeholder="labels (study,work...)"
+          value={labels}
+          onChange={(e) =>
+            setLabels(e.target.value)
+          }
+          style={{
+            width: "100%",
+            padding: "10px"
+          }}
+        />
 
-            className="
-              bg-blue-500
-              text-white
-              p-2
-              rounded
-              mr-2
-            "
-          >
-            List
-          </button>
+        <br />
+        <br />
 
-          <button
-
-            onClick={() => setView("grid")}
-
-            className="
-              bg-green-500
-              text-white
-              p-2
-              rounded
-            "
-          >
-            Grid
-          </button>
-
-        </div>
-
-        {/* empty */}
         {
-          filteredNotes.length === 0 && (
-
-            <p>No notes found</p>
-
-          )
+          loading
+            ? <p>Auto Saving...</p>
+            : <p>Saved</p>
         }
 
-        {/* notes */}
-        <div
+      </div>
 
-          className={
+      {/* SEARCH */}
 
-            view === "grid"
+      <input
+        type="text"
+        placeholder="Search..."
+        value={search}
+        onChange={(e) =>
+          setSearch(e.target.value)
+        }
+        style={{
+          width: "100%",
+          padding: "10px",
+          marginBottom: "20px"
+        }}
+      />
 
-              ? "grid md:grid-cols-2 lg:grid-cols-3 gap-5"
+      {/* LABEL FILTER */}
 
-              : "grid grid-cols-1 gap-5"
+      <div
+        style={{
+          marginBottom: "20px"
+        }}
+      >
 
+        <button
+          onClick={() =>
+            setSelectedLabel("")
           }
-
         >
+          All
+        </button>
 
-          {
-            filteredNotes.map((item) => (
+        {
 
-              <div
+          allLabels.map((label) => (
 
-                key={item._id}
+            <button
+              key={label}
+              onClick={() =>
+                setSelectedLabel(label)
+              }
+              style={{
+                marginLeft: "10px"
+              }}
+            >
+              #{label}
+            </button>
 
-                className="
-                  bg-white
-                  p-5
-                  rounded
-                  shadow
-                "
+          ))
 
-              >
+        }
 
-                <h2 className="text-2xl font-bold mb-3">
+      </div>
 
-                  {
-                    item.isPinned
-                      ? "📌 "
-                      : ""
-                  }
+      {/* VIEW MODE */}
 
-                  {item.title}
+      <div
+        style={{
+          marginBottom: "20px"
+        }}
+      >
 
-                </h2>
+        <button
+          onClick={() =>
+            setViewMode("list")
+          }
+        >
+          List
+        </button>
 
-                <p className="text-gray-600">
-                  {item.content}
-                </p>
+        <button
+          onClick={() =>
+            setViewMode("grid")
+          }
+          style={{
+            marginLeft: "10px"
+          }}
+        >
+          Grid
+        </button>
 
-                <div className="mt-5 flex gap-2 flex-wrap">
+      </div>
 
-                  {/* delete */}
-                  <button
+      {/* NOTES */}
 
-                    onClick={() =>
-                      handleDelete(item._id)
-                    }
+      <div
+        style={{
 
-                    className="
-                      bg-red-500
-                      text-white
-                      p-2
-                      rounded
-                    "
+          display: "grid",
 
-                  >
-                    Delete
-                  </button>
+          gridTemplateColumns:
 
-                  {/* edit */}
-                  <button
+            viewMode === "grid"
+              ? "repeat(3,1fr)"
+              : "1fr",
 
-                    onClick={() => {
+          gap: "20px"
+        }}
+      >
 
-                      setEditId(item._id);
+        {
 
-                      setTitle(item.title);
+          filteredNotes.map((note) => (
 
-                      setContent(item.content);
+            <div
+              key={note._id}
+              style={{
+                border: "1px solid #ccc",
+                padding: "20px",
+                borderRadius: "10px"
+              }}
+            >
 
-                    }}
+              <h2>{note.title}</h2>
 
-                    className="
-                      bg-yellow-500
-                      text-white
-                      p-2
-                      rounded
-                    "
+              <p>{note.content}</p>
 
-                  >
-                    Edit
-                  </button>
+              {/* LABELS */}
 
-                  {/* pin */}
-                  <button
+              <div>
 
-                    onClick={() =>
-                      handlePin(item._id)
-                    }
+                {
 
-                    className="
-                      bg-blue-500
-                      text-white
-                      p-2
-                      rounded
-                    "
+                  note.labels?.map((label) => (
 
-                  >
-                    {
-                      item.isPinned
-                        ? "Unpin"
-                        : "Pin"
-                    }
-                  </button>
+                    <span
+                      key={label}
+                      style={{
+                        background: "#eee",
+                        padding: "5px 10px",
+                        borderRadius: "20px",
+                        marginRight: "10px",
+                        fontSize: "12px"
+                      }}
+                    >
+                      #{label}
+                    </span>
 
-                </div>
+                  ))
+
+                }
 
               </div>
 
-            ))
-          }
+              <br />
 
-        </div>
+              <button
+                onClick={() =>
+                  deleteNote(note._id)
+                }
+                style={{
+                  background: "red",
+                  color: "white",
+                  border: "none",
+                  padding: "10px",
+                  borderRadius: "5px"
+                }}
+              >
+                Delete
+              </button>
+
+            </div>
+
+          ))
+
+        }
 
       </div>
+
+      {
+
+        filteredNotes.length === 0 && (
+
+          <p>No notes found</p>
+
+        )
+
+      }
 
     </div>
   );

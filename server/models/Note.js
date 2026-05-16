@@ -10,20 +10,20 @@ const noteSchema = new mongoose.Schema({
     type: String
   },
 
-  // pin note
-  isPinned: {
-    type: Boolean,
-    default: false
-  },
+  labels: [String],
 
-  // user sở hữu
-  user: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "User"
+  isPinned: {
+
+    type: Boolean,
+
+    default: false
+
   }
 
 }, {
+
   timestamps: true
+
 });
 
 module.exports = mongoose.model(
