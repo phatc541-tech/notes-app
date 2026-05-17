@@ -89,7 +89,9 @@ function Home() {
 
       ) return;
 
-      // UPDATE
+      // ======================
+      // UPDATE NOTE
+      // ======================
 
       if (editingId) {
 
@@ -107,33 +109,46 @@ function Home() {
 
         );
 
+        // reload notes
+
+        fetchNotes();
+
       }
 
-      // CREATE
+      // ======================
+      // CREATE NOTE
+      // ======================
 
       else {
 
-        await api.post(
+        const res =
 
-          "/notes",
+          await api.post(
 
-          {
+            "/notes",
 
-            title,
-            content,
-            labels
+            {
 
-          }
+              title,
+              content,
+              labels
 
-        );
+            }
+
+          );
+
+        // thêm note mới xuống dưới ngay
+
+        setNotes((prev) => [
+
+          res.data,
+          ...prev
+
+        ]);
 
       }
 
-      // reload notes
-
-      await fetchNotes();
-
-      // clear form
+      // reset form
 
       setTitle("");
 
@@ -167,7 +182,19 @@ function Home() {
 
       );
 
-      fetchNotes();
+      // xóa ngay trên UI
+
+      setNotes(
+
+        notes.filter(
+
+          (note) =>
+
+            note._id !== id
+
+        )
+
+      );
 
     }
 
@@ -532,7 +559,7 @@ function Home() {
             background:
               viewMode === "list"
                 ? "blue"
-                : "#ccc",
+                : "#999",
 
             color: "white",
 
@@ -567,7 +594,7 @@ function Home() {
             background:
               viewMode === "grid"
                 ? "green"
-                : "#ccc",
+                : "#999",
 
             color: "white",
 
