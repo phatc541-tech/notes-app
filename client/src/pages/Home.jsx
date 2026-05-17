@@ -43,6 +43,9 @@ function Home() {
   const [editingId, setEditingId] =
     useState(null);
 
+  const [darkMode, setDarkMode] =
+    useState(false);
+
   // ======================
   // FETCH NOTES
   // ======================
@@ -80,8 +83,6 @@ function Home() {
 
     try {
 
-      // empty check
-
       if (
 
         !title.trim() ||
@@ -99,9 +100,7 @@ function Home() {
 
       }
 
-      // ======================
-      // UPDATE NOTE
-      // ======================
+      // UPDATE
 
       if (editingId) {
 
@@ -137,9 +136,7 @@ function Home() {
 
       }
 
-      // ======================
-      // CREATE NOTE
-      // ======================
+      // CREATE
 
       else {
 
@@ -159,21 +156,16 @@ function Home() {
 
           );
 
-        console.log(res.data);
-
-        // add new note
-
         setNotes((prev) => [
 
           res.data,
-
           ...prev
 
         ]);
 
       }
 
-      // clear form
+      // CLEAR FORM
 
       setTitle("");
 
@@ -188,12 +180,6 @@ function Home() {
     catch (error) {
 
       console.log(error);
-
-      console.log(
-
-        error.response
-
-      );
 
       alert(
 
@@ -305,9 +291,15 @@ function Home() {
 
         padding: "20px",
 
-        background: "#f5f5f5",
+        background:
 
-        minHeight: "100vh"
+          darkMode
+            ? "#121212"
+            : "#f5f5f5",
+
+        minHeight: "100vh",
+
+        transition: "0.3s"
 
       }}
 
@@ -332,39 +324,103 @@ function Home() {
 
       >
 
-        <h1>
-
-          My Notes
-
-        </h1>
-
-        <button
-
-          onClick={logout}
+        <h1
 
           style={{
 
-            background: "red",
+            color:
 
-            color: "white",
-
-            border: "none",
-
-            padding: "12px 18px",
-
-            borderRadius: "8px",
-
-            cursor: "pointer",
-
-            fontWeight: "bold"
+              darkMode
+                ? "white"
+                : "black"
 
           }}
 
         >
 
-          Logout
+          My Notes
 
-        </button>
+        </h1>
+
+        <div>
+
+          {/* DARK MODE */}
+
+          <button
+
+            onClick={() =>
+
+              setDarkMode(
+
+                !darkMode
+
+              )
+
+            }
+
+            style={{
+
+              background:
+
+                darkMode
+                  ? "#333"
+                  : "black",
+
+              color: "white",
+
+              border: "none",
+
+              padding: "12px 18px",
+
+              borderRadius: "8px",
+
+              cursor: "pointer",
+
+              marginRight: "10px"
+
+            }}
+
+          >
+
+            {
+
+              darkMode
+                ? "Light Mode"
+                : "Dark Mode"
+
+            }
+
+          </button>
+
+          {/* LOGOUT */}
+
+          <button
+
+            onClick={logout}
+
+            style={{
+
+              background: "red",
+
+              color: "white",
+
+              border: "none",
+
+              padding: "12px 18px",
+
+              borderRadius: "8px",
+
+              cursor: "pointer"
+
+            }}
+
+          >
+
+            Logout
+
+          </button>
+
+        </div>
 
       </div>
 
@@ -374,7 +430,17 @@ function Home() {
 
         style={{
 
-          background: "white",
+          background:
+
+            darkMode
+              ? "#1e1e1e"
+              : "white",
+
+          color:
+
+            darkMode
+              ? "white"
+              : "black",
 
           padding: "20px",
 
@@ -383,6 +449,7 @@ function Home() {
           marginBottom: "20px",
 
           boxShadow:
+
             "0 0 10px rgba(0,0,0,0.1)"
 
         }}
@@ -669,13 +736,24 @@ function Home() {
 
               style={{
 
-                background: "white",
+                background:
+
+                  darkMode
+                    ? "#1e1e1e"
+                    : "white",
+
+                color:
+
+                  darkMode
+                    ? "white"
+                    : "black",
 
                 padding: "20px",
 
                 borderRadius: "12px",
 
                 boxShadow:
+
                   "0 0 10px rgba(0,0,0,0.1)"
 
               }}
