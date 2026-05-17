@@ -80,6 +80,15 @@ function Home() {
 
     try {
 
+      // không save nếu trống
+
+      if (
+
+        !title.trim() &&
+        !content.trim()
+
+      ) return;
+
       // UPDATE
 
       if (editingId) {
@@ -121,7 +130,7 @@ function Home() {
 
           );
 
-        // hiện note mới ngay
+        // thêm note mới
 
         setNotes((prev) => [
 
@@ -130,6 +139,14 @@ function Home() {
           ...prev
 
         ]);
+
+        // reset form
+
+        setTitle("");
+
+        setContent("");
+
+        setLabels("");
 
       }
 
@@ -149,7 +166,11 @@ function Home() {
 
   useEffect(() => {
 
-    // không autosave nếu trống
+    // không autosave khi edit
+
+    if (editingId) return;
+
+    // không save nếu trống
 
     if (
 
@@ -215,6 +236,48 @@ function Home() {
     setLabels(note.labels);
 
     setEditingId(note._id);
+
+  };
+
+  // ======================
+  // UPDATE NOTE
+  // ======================
+
+  const updateNote = async () => {
+
+    try {
+
+      await api.put(
+
+        `/notes/${editingId}`,
+
+        {
+
+          title,
+          content,
+          labels
+
+        }
+
+      );
+
+      setEditingId(null);
+
+      setTitle("");
+
+      setContent("");
+
+      setLabels("");
+
+      fetchNotes();
+
+    }
+
+    catch (error) {
+
+      console.log(error);
+
+    }
 
   };
 
@@ -432,15 +495,52 @@ function Home() {
 
         />
 
-        <p
-          style={{
-            color: "gray"
-          }}
-        >
+        {
 
-          Auto saving...
+          editingId ? (
 
-        </p>
+            <button
+
+              onClick={updateNote}
+
+              style={{
+
+                background:
+                  "orange",
+
+                color: "white",
+
+                border: "none",
+
+                padding: "10px",
+
+                borderRadius: "5px",
+
+                cursor: "pointer"
+
+              }}
+
+            >
+
+              Update Note
+
+            </button>
+
+          ) : (
+
+            <p
+              style={{
+                color: "gray"
+              }}
+            >
+
+              Auto saving...
+
+            </p>
+
+          )
+
+        }
 
       </div>
 
@@ -611,8 +711,6 @@ function Home() {
               #{note.labels}
 
             </p>
-
-            {/* BUTTONS */}
 
             <div
               style={{
