@@ -1,16 +1,14 @@
 import { useEffect, useState } from "react";
-
 import { useNavigate } from "react-router-dom";
-
 import api from "../services/api";
 
 function Home() {
 
   const navigate = useNavigate();
 
-  // =========================
+  // ======================
   // STATES
-  // =========================
+  // ======================
 
   const [notes, setNotes] = useState([]);
 
@@ -22,33 +20,19 @@ function Home() {
 
   const [search, setSearch] = useState("");
 
-  const [selectedLabel, setSelectedLabel] = useState("");
-
   const [viewMode, setViewMode] = useState("list");
 
   const [loading, setLoading] = useState(false);
 
-  // =========================
+  // ======================
   // TOKEN
-  // =========================
+  // ======================
 
   const token = localStorage.getItem("token");
 
-  // =========================
-  // LOGOUT
-  // =========================
-
-  const logout = () => {
-
-    localStorage.removeItem("token");
-
-    navigate("/login");
-
-  };
-
-  // =========================
+  // ======================
   // GET NOTES
-  // =========================
+  // ======================
 
   const getNotes = async () => {
 
@@ -72,9 +56,9 @@ function Home() {
     }
   };
 
-  // =========================
+  // ======================
   // LOAD NOTES
-  // =========================
+  // ======================
 
   useEffect(() => {
 
@@ -90,9 +74,9 @@ function Home() {
 
   }, []);
 
-  // =========================
+  // ======================
   // AUTOSAVE
-  // =========================
+  // ======================
 
   useEffect(() => {
 
@@ -143,9 +127,9 @@ function Home() {
 
   }, [title, content]);
 
-  // =========================
+  // ======================
   // DELETE NOTE
-  // =========================
+  // ======================
 
   const deleteNote = async (id) => {
 
@@ -169,49 +153,35 @@ function Home() {
     }
   };
 
-  // =========================
-  // FILTER NOTES
-  // =========================
+  // ======================
+  // LOGOUT
+  // ======================
 
-  const filteredNotes = notes.filter((note) => {
+  const logout = () => {
 
-    const matchSearch =
+    localStorage.removeItem("token");
 
-      note.title
-        .toLowerCase()
-        .includes(search.toLowerCase())
+    navigate("/login");
 
-      ||
+  };
 
-      note.content
-        .toLowerCase()
-        .includes(search.toLowerCase());
+  // ======================
+  // SEARCH
+  // ======================
 
-    const matchLabel =
+  const filteredNotes = notes.filter((note) =>
 
-      selectedLabel === ""
+    note.title
+      .toLowerCase()
+      .includes(search.toLowerCase())
 
-      ||
+    ||
 
-      note.labels?.includes(selectedLabel);
+    note.content
+      .toLowerCase()
+      .includes(search.toLowerCase())
 
-    return matchSearch && matchLabel;
-
-  });
-
-  // =========================
-  // ALL LABELS
-  // =========================
-
-  const allLabels = [
-
-    ...new Set(
-      notes.flatMap(
-        (note) => note.labels || []
-      )
-    )
-
-  ];
+  );
 
   return (
 
@@ -231,19 +201,7 @@ function Home() {
         }}
       >
 
-        <div>
-
-          <h1>My Notes</h1>
-
-          <h2
-            style={{
-              color: "red"
-            }}
-          >
-            NEW VERSION
-          </h2>
-
-        </div>
+        <h1>My Notes</h1>
 
         <button
           onClick={logout}
@@ -341,58 +299,6 @@ function Home() {
         }}
       />
 
-      {/* FILTER LABEL */}
-
-      <div
-        style={{
-          marginBottom: "20px"
-        }}
-      >
-
-        <button
-          onClick={() =>
-            setSelectedLabel("")
-          }
-          style={{
-            background: "#2563eb",
-            color: "white",
-            border: "none",
-            padding: "10px 20px",
-            borderRadius: "5px",
-            marginRight: "10px"
-          }}
-        >
-          All
-        </button>
-
-        {
-
-          allLabels.map((label) => (
-
-            <button
-              key={label}
-              onClick={() =>
-                setSelectedLabel(label)
-              }
-              style={{
-                background: "#16a34a",
-                color: "white",
-                border: "none",
-                padding: "10px 20px",
-                borderRadius: "5px",
-                marginRight: "10px",
-                marginTop: "10px"
-              }}
-            >
-              {label}
-            </button>
-
-          ))
-
-        }
-
-      </div>
-
       {/* VIEW MODE */}
 
       <div
@@ -410,8 +316,7 @@ function Home() {
             color: "white",
             border: "none",
             padding: "10px 20px",
-            borderRadius: "5px",
-            cursor: "pointer"
+            borderRadius: "5px"
           }}
         >
           List
@@ -427,8 +332,7 @@ function Home() {
             border: "none",
             padding: "10px 20px",
             borderRadius: "5px",
-            marginLeft: "10px",
-            cursor: "pointer"
+            marginLeft: "10px"
           }}
         >
           Grid
