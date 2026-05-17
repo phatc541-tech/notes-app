@@ -21,11 +21,18 @@ function Profile() {
   const [avatar, setAvatar] =
     useState("");
 
+  const [loading, setLoading] =
+    useState(true);
+
   useEffect(() => {
 
     fetchProfile();
 
   }, []);
+
+  // ======================
+  // FETCH PROFILE
+  // ======================
 
   const fetchProfile = async () => {
 
@@ -38,6 +45,8 @@ function Profile() {
           "/auth/profile"
 
         );
+
+      console.log(res.data);
 
       setUser(res.data);
 
@@ -65,9 +74,27 @@ function Profile() {
 
       console.log(error);
 
+      alert(
+
+        error.response?.data?.message ||
+
+        "Failed to load profile"
+
+      );
+
+    }
+
+    finally {
+
+      setLoading(false);
+
     }
 
   };
+
+  // ======================
+  // UPDATE PROFILE
+  // ======================
 
   const updateProfile = async () => {
 
@@ -103,11 +130,43 @@ function Profile() {
 
       console.log(error);
 
-      alert("Update failed");
+      alert(
+
+        error.response?.data?.message ||
+
+        "Update failed"
+
+      );
 
     }
 
   };
+
+  // ======================
+  // LOADING
+  // ======================
+
+  if (loading) {
+
+    return (
+
+      <div
+        style={{
+          padding: "40px"
+        }}
+      >
+
+        Loading...
+
+      </div>
+
+    );
+
+  }
+
+  // ======================
+  // ERROR
+  // ======================
 
   if (!user) {
 
@@ -119,7 +178,7 @@ function Profile() {
         }}
       >
 
-        Loading...
+        Failed to load profile
 
       </div>
 
@@ -275,7 +334,9 @@ function Profile() {
 
           padding: "12px 20px",
 
-          borderRadius: "8px"
+          borderRadius: "8px",
+
+          cursor: "pointer"
 
         }}
 
