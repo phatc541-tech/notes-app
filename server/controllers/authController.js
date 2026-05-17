@@ -4,9 +4,9 @@ const bcrypt = require("bcryptjs");
 
 const jwt = require("jsonwebtoken");
 
-// ======================
+// ==========================
 // REGISTER
-// ======================
+// ==========================
 
 const register = async (req, res) => {
 
@@ -18,72 +18,80 @@ const register = async (req, res) => {
       password
     } = req.body;
 
-    const userExists =
+    // CHECK EMAIL
+
+    const existingUser =
       await User.findOne({ email });
 
-    if (userExists) {
+    if (existingUser) {
 
       return res.status(400).json({
+
         message: "Email already exists"
+
       });
 
     }
 
-    const salt =
-      await bcrypt.genSalt(10);
+    // HASH PASSWORD
 
     const hashedPassword =
-      await bcrypt.hash(
-        password,
-        salt
-      );
+      await bcrypt.hash(password, 10);
+
+    // CREATE USER
 
     const user =
       await User.create({
 
         name,
-
         email,
-
         password: hashedPassword
 
       });
 
+    // TOKEN
+
     const token = jwt.sign(
 
       {
+
         id: user._id
+
       },
 
       process.env.JWT_SECRET,
 
       {
+
         expiresIn: "7d"
+
       }
 
     );
 
     res.status(201).json({
 
-      token,
-
-      user
+      token
 
     });
 
   } catch (error) {
 
+    console.log(error);
+
     res.status(500).json({
-      message: error.message
+
+      message: "Server Error"
+
     });
 
   }
 
 };
 
-// ======================
+// ==========================
 // LOGIN
-// ======================
+// ==========================
 
 const login = async (req, res) => {
 
@@ -94,16 +102,22 @@ const login = async (req, res) => {
       password
     } = req.body;
 
+    // FIND USER
+
     const user =
       await User.findOne({ email });
 
     if (!user) {
 
       return res.status(400).json({
-        message: "Invalid email"
+
+        message: "User not found"
+
       });
 
     }
+
+    // CHECK PASSWORD
 
     const isMatch =
       await bcrypt.compare(
@@ -114,37 +128,47 @@ const login = async (req, res) => {
     if (!isMatch) {
 
       return res.status(400).json({
-        message: "Invalid password"
+
+        message: "Wrong password"
+
       });
 
     }
 
+    // TOKEN
+
     const token = jwt.sign(
 
       {
+
         id: user._id
+
       },
 
       process.env.JWT_SECRET,
 
       {
+
         expiresIn: "7d"
+
       }
 
     );
 
-    res.json({
+    res.status(200).json({
 
-      token,
-
-      user
+      token
 
     });
 
   } catch (error) {
 
+    console.log(error);
+
     res.status(500).json({
-      message: error.message
+
+      message: "Server Error"
+
     });
 
   }
@@ -154,7 +178,6 @@ const login = async (req, res) => {
 module.exports = {
 
   register,
-
   login
 
 };
