@@ -98,29 +98,40 @@ function Home() {
 
         );
 
+        fetchNotes();
+
       }
 
       // CREATE
 
       else {
 
-        await api.post(
+        const res =
+          await api.post(
 
-          "/notes",
+            "/notes",
 
-          {
+            {
 
-            title,
-            content,
-            labels
+              title,
+              content,
+              labels
 
-          }
+            }
 
-        );
+          );
+
+        // hiện note mới ngay
+
+        setNotes((prev) => [
+
+          res.data,
+
+          ...prev
+
+        ]);
 
       }
-
-      fetchNotes();
 
     }
 
@@ -142,8 +153,8 @@ function Home() {
 
     if (
 
-      !title &&
-      !content
+      !title.trim() &&
+      !content.trim()
 
     ) return;
 
