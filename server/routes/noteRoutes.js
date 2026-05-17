@@ -2,28 +2,28 @@ const express = require("express");
 
 const router = express.Router();
 
-// ======================
-// CONTROLLERS
-// ======================
-
 const {
 
   getNotes,
-
   createNote,
+  updateNote,
+  deleteNote
 
-  deleteNote,
+} = require(
 
-  updateNote
+  "../controllers/noteController"
 
-} = require("../controllers/noteController");
+);
 
-// ======================
-// MIDDLEWARE
-// ======================
+const {
 
-const protect =
-require("../middleware/authMiddleware");
+  protect
+
+} = require(
+
+  "../middleware/authMiddleware"
+
+);
 
 // ======================
 // GET NOTES
@@ -54,20 +54,6 @@ router.post(
 );
 
 // ======================
-// DELETE NOTE
-// ======================
-
-router.delete(
-
-  "/:id",
-
-  protect,
-
-  deleteNote
-
-);
-
-// ======================
 // UPDATE NOTE
 // ======================
 
@@ -78,6 +64,20 @@ router.put(
   protect,
 
   updateNote
+
+);
+
+// ======================
+// DELETE NOTE
+// ======================
+
+router.delete(
+
+  "/:id",
+
+  protect,
+
+  deleteNote
 
 );
 
