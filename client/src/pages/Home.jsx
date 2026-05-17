@@ -49,6 +49,9 @@ function Home() {
   const [isPinned, setIsPinned] =
     useState(false);
 
+  const [lastSync, setLastSync] =
+    useState("");
+
   // ======================
   // FETCH NOTES
   // ======================
@@ -67,9 +70,7 @@ function Home() {
 
       setNotes(res.data);
 
-      // ======================
-      // SAVE OFFLINE
-      // ======================
+      // OFFLINE CACHE
 
       localStorage.setItem(
 
@@ -83,15 +84,21 @@ function Home() {
 
       );
 
+      // REALTIME STATUS
+
+      setLastSync(
+
+        new Date().toLocaleTimeString()
+
+      );
+
     }
 
     catch (error) {
 
       console.log(error);
 
-      // ======================
       // LOAD OFFLINE
-      // ======================
 
       const offlineNotes =
 
@@ -120,7 +127,7 @@ function Home() {
   };
 
   // ======================
-  // REALTIME
+  // REALTIME AUTO REFRESH
   // ======================
 
   useEffect(() => {
@@ -169,7 +176,7 @@ function Home() {
 
       }
 
-      // UPDATE
+      // UPDATE NOTE
 
       if (editingId) {
 
@@ -206,7 +213,7 @@ function Home() {
 
       }
 
-      // CREATE
+      // CREATE NOTE
 
       else {
 
@@ -236,7 +243,7 @@ function Home() {
 
       }
 
-      // CLEAR FORM
+      // RESET FORM
 
       setTitle("");
 
@@ -440,23 +447,125 @@ function Home() {
 
       >
 
-        <h1
+        <div>
 
-          style={{
+          <h1
 
-            color:
+            style={{
 
-              darkMode
-                ? "white"
-                : "black"
+              color:
 
-          }}
+                darkMode
+                  ? "white"
+                  : "black"
 
-        >
+            }}
 
-          My Notes
+          >
 
-        </h1>
+            My Notes
+
+          </h1>
+
+          {/* REALTIME */}
+
+          <p
+
+            style={{
+
+              color:
+
+                darkMode
+                  ? "#ccc"
+                  : "#555"
+
+            }}
+
+          >
+
+            🟢 Realtime Sync Active
+
+          </p>
+
+          <p
+
+            style={{
+
+              color:
+
+                darkMode
+                  ? "#ccc"
+                  : "#555"
+
+            }}
+
+          >
+
+            Last updated:
+
+            {" "}
+
+            {lastSync}
+
+          </p>
+
+          {/* NOTE COUNTER */}
+
+          <p
+
+            style={{
+
+              color:
+
+                darkMode
+                  ? "#ccc"
+                  : "#555"
+
+            }}
+
+          >
+
+            Total Notes:
+
+            {" "}
+
+            {notes.length}
+
+          </p>
+
+          <p
+
+            style={{
+
+              color:
+
+                darkMode
+                  ? "#ccc"
+                  : "#555"
+
+            }}
+
+          >
+
+            Pinned Notes:
+
+            {" "}
+
+            {
+
+              notes.filter(
+
+                (note) =>
+
+                  note.isPinned
+
+              ).length
+
+            }
+
+          </p>
+
+        </div>
 
         <div>
 
@@ -607,7 +716,9 @@ function Home() {
           onChange={(e) =>
 
             setTitle(
+
               e.target.value
+
             )
 
           }
@@ -633,7 +744,9 @@ function Home() {
           onChange={(e) =>
 
             setContent(
+
               e.target.value
+
             )
 
           }
@@ -663,7 +776,9 @@ function Home() {
           onChange={(e) =>
 
             setLabels(
+
               e.target.value
+
             )
 
           }
@@ -754,14 +869,16 @@ function Home() {
 
         type="text"
 
-        placeholder="Search..."
+        placeholder="Search notes..."
 
         value={search}
 
         onChange={(e) =>
 
           setSearch(
+
             e.target.value
+
           )
 
         }
@@ -778,44 +895,13 @@ function Home() {
 
       />
 
-      {/* VIEW */}
+      {/* VIEW MODE */}
 
       <div
         style={{
           marginBottom: "20px"
         }}
       >
-
-        <button
-
-          onClick={() =>
-
-            setViewMode("list")
-
-          }
-
-          style={{
-
-            background:
-              viewMode === "list"
-                ? "blue"
-                : "#999",
-
-            color: "white",
-
-            border: "none",
-
-            padding: "10px 16px",
-
-            marginRight: "10px"
-
-          }}
-
-        >
-
-          List
-
-        </button>
 
         <button
 
@@ -836,7 +922,9 @@ function Home() {
 
             border: "none",
 
-            padding: "10px 16px"
+            padding: "10px 15px",
+
+            marginRight: "10px"
 
           }}
 
@@ -846,7 +934,76 @@ function Home() {
 
         </button>
 
+        <button
+
+          onClick={() =>
+
+            setViewMode("list")
+
+          }
+
+          style={{
+
+            background:
+              viewMode === "list"
+                ? "blue"
+                : "#999",
+
+            color: "white",
+
+            border: "none",
+
+            padding: "10px 15px"
+
+          }}
+
+        >
+
+          List
+
+        </button>
+
       </div>
+
+      {/* EMPTY */}
+
+      {
+
+        filteredNotes.length === 0 && (
+
+          <div
+
+            style={{
+
+              background:
+
+                darkMode
+                  ? "#1e1e1e"
+                  : "white",
+
+              padding: "30px",
+
+              borderRadius: "12px",
+
+              textAlign: "center",
+
+              color:
+
+                darkMode
+                  ? "white"
+                  : "black"
+
+            }}
+
+          >
+
+            No notes yet 😄
+
+          </div>
+
+        )
+
+      }
 
       {/* NOTES */}
 
@@ -922,6 +1079,36 @@ function Home() {
               <p>
 
                 #{note.labels}
+
+              </p>
+
+              {/* CREATED */}
+
+              <p
+
+                style={{
+
+                  fontSize: "12px",
+
+                  opacity: 0.7
+
+                }}
+
+              >
+
+                Created:
+
+                {" "}
+
+                {
+
+                  new Date(
+
+                    note.createdAt
+
+                  ).toLocaleString()
+
+                }
 
               </p>
 
