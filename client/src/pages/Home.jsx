@@ -80,14 +80,24 @@ function Home() {
 
     try {
 
-      // không save nếu trống
+      // empty check
 
       if (
 
-        !title.trim() &&
+        !title.trim() ||
         !content.trim()
 
-      ) return;
+      ) {
+
+        alert(
+
+          "Please enter title and content"
+
+        );
+
+        return;
+
+      }
 
       // ======================
       // UPDATE NOTE
@@ -149,7 +159,9 @@ function Home() {
 
           );
 
-        // thêm note mới ngay
+        console.log(res.data);
+
+        // add new note
 
         setNotes((prev) => [
 
@@ -177,7 +189,15 @@ function Home() {
 
       console.log(error);
 
+      console.log(
+
+        error.response
+
+      );
+
       alert(
+
+        error.response?.data?.message ||
 
         "Save note failed"
 
@@ -236,8 +256,6 @@ function Home() {
     setLabels(note.labels);
 
     setEditingId(note._id);
-
-    // scroll lên trên
 
     window.scrollTo({
 
@@ -398,9 +416,7 @@ function Home() {
             borderRadius: "8px",
 
             border:
-              "1px solid #ccc",
-
-            fontSize: "16px"
+              "1px solid #ccc"
 
           }}
 
@@ -433,9 +449,7 @@ function Home() {
             borderRadius: "8px",
 
             border:
-              "1px solid #ccc",
-
-            fontSize: "16px"
+              "1px solid #ccc"
 
           }}
 
@@ -468,9 +482,7 @@ function Home() {
             borderRadius: "8px",
 
             border:
-              "1px solid #ccc",
-
-            fontSize: "16px"
+              "1px solid #ccc"
 
           }}
 
@@ -545,9 +557,7 @@ function Home() {
           borderRadius: "8px",
 
           border:
-            "1px solid #ccc",
-
-          fontSize: "16px"
+            "1px solid #ccc"
 
         }}
 
@@ -584,9 +594,7 @@ function Home() {
 
             borderRadius: "8px",
 
-            marginRight: "10px",
-
-            cursor: "pointer"
+            marginRight: "10px"
 
           }}
 
@@ -617,9 +625,7 @@ function Home() {
 
             padding: "10px 16px",
 
-            borderRadius: "8px",
-
-            cursor: "pointer"
+            borderRadius: "8px"
 
           }}
 
@@ -724,10 +730,7 @@ function Home() {
                       "8px",
 
                     marginRight:
-                      "10px",
-
-                    cursor:
-                      "pointer"
+                      "10px"
 
                   }}
 
@@ -760,10 +763,7 @@ function Home() {
                       "10px 15px",
 
                     borderRadius:
-                      "8px",
-
-                    cursor:
-                      "pointer"
+                      "8px"
 
                   }}
 
