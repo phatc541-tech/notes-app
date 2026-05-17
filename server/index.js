@@ -1,25 +1,40 @@
+require("dotenv").config();
+
+const express = require("express");
+
+const mongoose = require("mongoose");
+
 const cors = require("cors");
-const express = require("express")
-const mongoose = require("mongoose")
 
-require("dotenv").config()
-
-// ROUTES
-const authRoutes = require("./routes/authRoutes")
-const noteRoutes = require("./routes/noteRoutes")
+// ======================
+// APP
+// ======================
 
 const app = express();
+
+// ======================
+// CORS
+// ======================
+
 app.use(
 
   cors({
 
-    origin: "*",
+    origin: [
+
+      "http://localhost:5173",
+
+      "https://notes-app-mu-hazel.vercel.app"
+
+    ],
 
     methods: [
+
       "GET",
       "POST",
       "PUT",
       "DELETE"
+
     ],
 
     credentials: true
@@ -28,32 +43,79 @@ app.use(
 
 );
 
-// MIDDLEWARE
-app.use(express.json())
+// ======================
+// JSON
+// ======================
 
-// CHECK ENV
-console.log(process.env.MONGO_URI)
+app.use(express.json());
 
-// DATABASE
-mongoose.connect(process.env.MONGO_URI)
-.then(() => {
-  console.log("MongoDB Connected")
-})
-.catch((err) => {
-  console.log(err)
-})
-
+// ======================
 // ROUTES
-app.use("/api/auth", authRoutes)
+// ======================
 
-app.use("/api/notes", noteRoutes)
+const authRoutes =
+  require("./routes/authRoutes");
 
-// TEST
+const noteRoutes =
+  require("./routes/noteRoutes");
+
+app.use(
+  "/api/auth",
+  authRoutes
+);
+
+app.use(
+  "/api/notes",
+  noteRoutes
+);
+
+// ======================
+// MONGODB
+// ======================
+
+mongoose.connect(
+
+  process.env.MONGO_URI
+
+)
+
+.then(() => {
+
+  console.log(
+    "MongoDB Connected"
+  );
+
+})
+
+.catch((error) => {
+
+  console.log(error);
+
+});
+
+// ======================
+// TEST ROUTE
+// ======================
+
 app.get("/", (req, res) => {
-  res.send("Server Running")
-})
 
-// SERVER
-app.listen(3001, () => {
-  console.log("Server running on port 3001")
-})
+  res.send("API Running");
+
+});
+
+// ======================
+// PORT
+// ======================
+
+const PORT =
+  process.env.PORT || 3001;
+
+app.listen(PORT, () => {
+
+  console.log(
+
+    `Server running on port ${PORT}`
+
+  );
+
+});
