@@ -21,24 +21,21 @@ function Profile() {
   const [avatar, setAvatar] =
     useState("");
 
-  const [loading, setLoading] =
-    useState(true);
-
   const [oldPassword, setOldPassword] =
     useState("");
 
   const [newPassword, setNewPassword] =
     useState("");
 
+  // ======================
+  // FETCH PROFILE
+  // ======================
+
   useEffect(() => {
 
     fetchProfile();
 
   }, []);
-
-  // ======================
-  // FETCH PROFILE
-  // ======================
 
   const fetchProfile = async () => {
 
@@ -80,17 +77,9 @@ function Profile() {
 
       alert(
 
-        error.response?.data?.message ||
-
         "Failed to load profile"
 
       );
-
-    }
-
-    finally {
-
-      setLoading(false);
 
     }
 
@@ -135,8 +124,6 @@ function Profile() {
       console.log(error);
 
       alert(
-
-        error.response?.data?.message ||
 
         "Update failed"
 
@@ -185,8 +172,6 @@ function Profile() {
 
       alert(
 
-        error.response?.data?.message ||
-
         "Change password failed"
 
       );
@@ -196,29 +181,45 @@ function Profile() {
   };
 
   // ======================
+  // ACTIVATE ACCOUNT
+  // ======================
+
+  const activateAccount = async () => {
+
+    try {
+
+      await api.put(
+
+        "/auth/activate"
+
+      );
+
+      alert(
+
+        "Account activated"
+
+      );
+
+      fetchProfile();
+
+    }
+
+    catch (error) {
+
+      console.log(error);
+
+      alert(
+
+        "Activation failed"
+
+      );
+
+    }
+
+  };
+
+  // ======================
   // LOADING
-  // ======================
-
-  if (loading) {
-
-    return (
-
-      <div
-        style={{
-          padding: "40px"
-        }}
-      >
-
-        Loading...
-
-      </div>
-
-    );
-
-  }
-
-  // ======================
-  // ERROR
   // ======================
 
   if (!user) {
@@ -231,7 +232,7 @@ function Profile() {
         }}
       >
 
-        Failed to load profile
+        Loading...
 
       </div>
 
@@ -261,6 +262,62 @@ function Profile() {
 
       </h1>
 
+      {/* STATUS */}
+
+      <p>
+
+        Status:
+
+        {" "}
+
+        {
+
+          user?.isActivated
+
+            ? "✅ Activated"
+
+            : "❌ Not Activated"
+
+        }
+
+      </p>
+
+      {
+
+        !user?.isActivated && (
+
+          <button
+
+            onClick={activateAccount}
+
+            style={{
+
+              background: "green",
+
+              color: "white",
+
+              border: "none",
+
+              padding: "12px 20px",
+
+              borderRadius: "8px",
+
+              cursor: "pointer",
+
+              marginBottom: "20px"
+
+            }}
+
+          >
+
+            Activate Account
+
+          </button>
+
+        )
+
+      }
+
       {/* AVATAR */}
 
       <img
@@ -277,9 +334,9 @@ function Profile() {
 
           borderRadius: "50%",
 
-          marginBottom: "20px",
+          objectFit: "cover",
 
-          objectFit: "cover"
+          marginBottom: "20px"
 
         }}
 
@@ -443,8 +500,6 @@ function Profile() {
 
           padding: "12px",
 
-          marginTop: "10px",
-
           marginBottom: "10px"
 
         }}
@@ -487,7 +542,7 @@ function Profile() {
 
         style={{
 
-          background: "green",
+          background: "orange",
 
           color: "white",
 
