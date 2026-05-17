@@ -1,58 +1,78 @@
-import { useState } from "react";
+import {
 
-import { useNavigate } from "react-router-dom";
+  useState
+
+} from "react";
+
+import {
+
+  useNavigate
+
+} from "react-router-dom";
 
 import api from "../services/api";
 
 function Login() {
 
-  const navigate = useNavigate();
+  const navigate =
+    useNavigate();
 
-  // =====================
-  // STATES
-  // =====================
+  const [email, setEmail] =
+    useState("");
 
-  const [email, setEmail] = useState("");
+  const [password, setPassword] =
+    useState("");
 
-  const [password, setPassword] = useState("");
-
-  // =====================
+  // ======================
   // LOGIN
-  // =====================
+  // ======================
 
-  const handleLogin = async (e) => {
-
-    e.preventDefault();
+  const handleLogin = async () => {
 
     try {
 
-      const res = await api.post(
+      const res =
 
-        "/auth/login",
+        await api.post(
 
-        {
-          email,
-          password
-        }
+          "/auth/login",
 
-      );
+          {
 
-      console.log(res.data);
+            email,
+            password
+
+          }
+
+        );
+
+      // SAVE TOKEN
 
       localStorage.setItem(
+
         "token",
+
         res.data.token
+
       );
 
-      alert("Login Success");
+      // GO HOME
 
       navigate("/");
 
-    } catch (error) {
+    }
+
+    catch (error) {
 
       console.log(error);
 
-      alert("Login Failed");
+      alert(
+
+        error.response?.data?.message ||
+
+        "Login failed"
+
+      );
 
     }
 
@@ -61,68 +81,107 @@ function Login() {
   return (
 
     <div
+
       style={{
-        padding: "20px"
+
+        padding: "40px"
+
       }}
+
     >
 
-      <h1>Login</h1>
+      <h1>
 
-      <form onSubmit={handleLogin}>
+        Login
 
-        {/* EMAIL */}
+      </h1>
 
-        <input
-          type="email"
-          placeholder="Email"
-          value={email}
-          onChange={(e) =>
-            setEmail(e.target.value)
-          }
-          style={{
-            width: "300px",
-            padding: "10px",
-            marginBottom: "10px"
-          }}
-        />
+      <input
 
-        <br />
+        type="email"
 
-        {/* PASSWORD */}
+        placeholder="Email"
 
-        <input
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={(e) =>
-            setPassword(e.target.value)
-          }
-          style={{
-            width: "300px",
-            padding: "10px",
-            marginBottom: "10px"
-          }}
-        />
+        value={email}
 
-        <br />
+        onChange={(e) =>
 
-        <button
-          type="submit"
-          style={{
-            background: "#2563eb",
-            color: "white",
-            border: "none",
-            padding: "10px 20px",
-            borderRadius: "5px"
-          }}
-        >
-          Login
-        </button>
+          setEmail(
+            e.target.value
+          )
 
-      </form>
+        }
+
+        style={{
+
+          width: "300px",
+
+          padding: "12px",
+
+          marginBottom: "10px"
+
+        }}
+
+      />
+
+      <br />
+
+      <input
+
+        type="password"
+
+        placeholder="Password"
+
+        value={password}
+
+        onChange={(e) =>
+
+          setPassword(
+            e.target.value
+          )
+
+        }
+
+        style={{
+
+          width: "300px",
+
+          padding: "12px",
+
+          marginBottom: "10px"
+
+        }}
+
+      />
+
+      <br />
+
+      <button
+
+        onClick={handleLogin}
+
+        style={{
+
+          padding: "12px 20px",
+
+          background: "blue",
+
+          color: "white",
+
+          border: "none"
+
+        }}
+
+      >
+
+        Login
+
+      </button>
 
     </div>
+
   );
+
 }
 
 export default Login;

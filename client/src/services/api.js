@@ -4,7 +4,7 @@ const api = axios.create({
 
   baseURL:
 
-    "https://YOUR-RENDER-LINK.onrender.com/api"
+    "https://notes-app-2-lppk.onrender.com/api"
 
 });
 
@@ -17,8 +17,11 @@ api.interceptors.request.use(
   (config) => {
 
     const token =
+
       localStorage.getItem(
+
         "token"
+
       );
 
     if (token) {

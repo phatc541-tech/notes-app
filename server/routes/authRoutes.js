@@ -7,17 +7,34 @@ const {
   register,
   login
 
-} = require("../controllers/authController");
+} = require(
 
+  "../controllers/authController"
 
-router.post(
-  "/register",
-  register
 );
 
+// ======================
+// REGISTER
+// ======================
+
 router.post(
+
+  "/register",
+
+  register
+
+);
+
+// ======================
+// LOGIN
+// ======================
+
+router.post(
+
   "/login",
+
   login
+
 );
 
 module.exports = router;

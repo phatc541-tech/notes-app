@@ -1,65 +1,69 @@
-require("dotenv").config();
-
 const express = require("express");
 
 const mongoose = require("mongoose");
 
 const cors = require("cors");
 
-// ======================
-// ROUTES
-// ======================
-
-const authRoutes =
-  require("./routes/authRoutes");
-
-const noteRoutes =
-  require("./routes/noteRoutes");
-
-// ======================
-// APP
-// ======================
+require("dotenv").config();
 
 const app = express();
 
 // ======================
-// CORS
+// MIDDLEWARE
 // ======================
 
 app.use(cors());
 
-// ======================
-// JSON
-// ======================
-
 app.use(express.json());
 
 // ======================
-// API ROUTES
+// ROUTES
 // ======================
 
+const authRoutes = require(
+
+  "./routes/authRoutes"
+
+);
+
+const noteRoutes = require(
+
+  "./routes/noteRoutes"
+
+);
+
 app.use(
+
   "/api/auth",
+
   authRoutes
+
 );
 
 app.use(
+
   "/api/notes",
+
   noteRoutes
+
 );
 
 // ======================
-// TEST ROUTE
+// TEST
 // ======================
 
 app.get("/", (req, res) => {
 
-  res.send("API Running");
+  res.send(
+
+    "API Running"
+
+  );
 
 });
 
 // ======================
-// MONGODB
+// DATABASE
 // ======================
 
 mongoose.connect(
@@ -71,7 +75,25 @@ mongoose.connect(
 .then(() => {
 
   console.log(
+
     "MongoDB Connected"
+
+  );
+
+  app.listen(
+
+    process.env.PORT || 3001,
+
+    () => {
+
+      console.log(
+
+        "Server Running"
+
+      );
+
+    }
+
   );
 
 })
@@ -79,22 +101,5 @@ mongoose.connect(
 .catch((error) => {
 
   console.log(error);
-
-});
-
-// ======================
-// PORT
-// ======================
-
-const PORT =
-  process.env.PORT || 3001;
-
-app.listen(PORT, () => {
-
-  console.log(
-
-    `Server running on port ${PORT}`
-
-  );
 
 });
