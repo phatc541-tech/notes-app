@@ -1,19 +1,47 @@
-import { useEffect, useState } from "react";
+import {
+
+  useEffect,
+  useState
+
+} from "react";
+
+import {
+
+  useNavigate
+
+} from "react-router-dom";
+
 import api from "../services/api";
 
 function Home() {
 
-  const [notes, setNotes] = useState([]);
+  const navigate =
+    useNavigate();
 
-  const [title, setTitle] = useState("");
+  // ======================
+  // STATES
+  // ======================
 
-  const [content, setContent] = useState("");
+  const [notes, setNotes] =
+    useState([]);
 
-  const [labels, setLabels] = useState("");
+  const [title, setTitle] =
+    useState("");
 
-  const [search, setSearch] = useState("");
+  const [content, setContent] =
+    useState("");
 
-  const [viewMode, setViewMode] = useState("grid");
+  const [labels, setLabels] =
+    useState("");
+
+  const [search, setSearch] =
+    useState("");
+
+  const [viewMode, setViewMode] =
+    useState("grid");
+
+  const [editingId, setEditingId] =
+    useState(null);
 
   // ======================
   // FETCH NOTES
@@ -23,7 +51,8 @@ function Home() {
 
     try {
 
-      const res = await api.get("/notes");
+      const res =
+        await api.get("/notes");
 
       setNotes(res.data);
 
@@ -44,24 +73,64 @@ function Home() {
   }, []);
 
   // ======================
-  // CREATE NOTE
+  // SAVE NOTE
   // ======================
 
-  const createNote = async () => {
+  const saveNote = async () => {
 
     try {
 
-      await api.post("/notes", {
+      // UPDATE
 
-        title,
-        content,
-        labels
+      if (editingId) {
 
-      });
+        await api.put(
+
+          `/notes/${editingId}`,
+
+          {
+
+            title,
+            content,
+            labels
+
+          }
+
+        );
+
+      }
+
+      // CREATE
+
+      else {
+
+        await api.post(
+
+          "/notes",
+
+          {
+
+            title,
+            content,
+            labels
+
+          }
+
+        );
+
+      }
+
+      // RESET
 
       setTitle("");
+
       setContent("");
+
       setLabels("");
+
+      setEditingId(null);
+
+      // REFRESH
 
       fetchNotes();
 
@@ -83,51 +152,9 @@ function Home() {
 
     try {
 
-      await api.delete(`/notes/${id}`);
+      await api.delete(
 
-      fetchNotes();
-
-    }
-
-    catch (error) {
-
-      console.log(error);
-
-    }
-
-  };
-
-  // ======================
-  // UPDATE NOTE
-  // ======================
-
-  const updateNote = async (
-
-    id,
-    oldTitle
-
-  ) => {
-
-    const newTitle = prompt(
-
-      "Edit title",
-      oldTitle
-
-    );
-
-    if (!newTitle) return;
-
-    try {
-
-      await api.put(
-
-        `/notes/${id}`,
-
-        {
-
-          title: newTitle
-
-        }
+        `/notes/${id}`
 
       );
 
@@ -144,24 +171,59 @@ function Home() {
   };
 
   // ======================
+  // EDIT NOTE
+  // ======================
+
+  const editNote = (note) => {
+
+    setTitle(note.title);
+
+    setContent(note.content);
+
+    setLabels(note.labels);
+
+    setEditingId(note._id);
+
+  };
+
+  // ======================
+  // LOGOUT
+  // ======================
+
+  const logout = () => {
+
+    localStorage.removeItem(
+      "token"
+    );
+
+    navigate("/login");
+
+  };
+
+  // ======================
   // SEARCH
   // ======================
 
-  const filteredNotes = notes.filter((note) =>
+  const filteredNotes =
+    notes.filter((note) =>
 
-    note.title
-      ?.toLowerCase()
-      .includes(
+      note.title
+        ?.toLowerCase()
+        .includes(
 
-        search.toLowerCase()
+          search.toLowerCase()
 
-      )
+        )
 
-  );
+    );
 
   return (
 
-    <div style={{ padding: "20px" }}>
+    <div
+      style={{
+        padding: "20px"
+      }}
+    >
 
       {/* HEADER */}
 
@@ -171,7 +233,8 @@ function Home() {
 
           display: "flex",
 
-          justifyContent: "space-between",
+          justifyContent:
+            "space-between",
 
           alignItems: "center",
 
@@ -185,13 +248,7 @@ function Home() {
 
         <button
 
-          onClick={() => {
-
-            localStorage.removeItem("token");
-
-            window.location.href = "/login";
-
-          }}
+          onClick={logout}
 
           style={{
 
@@ -243,7 +300,9 @@ function Home() {
 
           onChange={(e) =>
 
-            setTitle(e.target.value)
+            setTitle(
+              e.target.value
+            )
 
           }
 
@@ -267,7 +326,9 @@ function Home() {
 
           onChange={(e) =>
 
-            setContent(e.target.value)
+            setContent(
+              e.target.value
+            )
 
           }
 
@@ -295,7 +356,9 @@ function Home() {
 
           onChange={(e) =>
 
-            setLabels(e.target.value)
+            setLabels(
+              e.target.value
+            )
 
           }
 
@@ -313,7 +376,7 @@ function Home() {
 
         <button
 
-          onClick={createNote}
+          onClick={saveNote}
 
           style={{
 
@@ -331,7 +394,15 @@ function Home() {
 
         >
 
-          Save
+          {
+
+            editingId
+
+              ? "Update"
+
+              : "Save"
+
+          }
 
         </button>
 
@@ -349,7 +420,9 @@ function Home() {
 
         onChange={(e) =>
 
-          setSearch(e.target.value)
+          setSearch(
+            e.target.value
+          )
 
         }
 
@@ -367,7 +440,11 @@ function Home() {
 
       {/* VIEW BUTTON */}
 
-      <div style={{ marginBottom: "20px" }}>
+      <div
+        style={{
+          marginBottom: "20px"
+        }}
+      >
 
         <button
 
@@ -459,7 +536,8 @@ function Home() {
 
             style={{
 
-              border: "1px solid #ccc",
+              border:
+                "1px solid #ccc",
 
               padding: "15px",
 
@@ -469,11 +547,23 @@ function Home() {
 
           >
 
-            <h2>{note.title}</h2>
+            <h2>
 
-            <p>{note.content}</p>
+              {note.title}
 
-            <p>{note.labels}</p>
+            </h2>
+
+            <p>
+
+              {note.content}
+
+            </p>
+
+            <p>
+
+              {note.labels}
+
+            </p>
 
             {/* EDIT */}
 
@@ -481,18 +571,14 @@ function Home() {
 
               onClick={() =>
 
-                updateNote(
-
-                  note._id,
-                  note.title
-
-                )
+                editNote(note)
 
               }
 
               style={{
 
-                background: "orange",
+                background:
+                  "orange",
 
                 color: "white",
 
@@ -518,7 +604,9 @@ function Home() {
 
               onClick={() =>
 
-                deleteNote(note._id)
+                deleteNote(
+                  note._id
+                )
 
               }
 
