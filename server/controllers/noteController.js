@@ -1,10 +1,19 @@
-const Note = require("../models/Note");
+const Note = require(
+
+  "../models/Note"
+
+);
 
 // ======================
 // GET NOTES
 // ======================
 
-const getNotes = async (req, res) => {
+const getNotes = async (
+
+  req,
+  res
+
+) => {
 
   try {
 
@@ -15,8 +24,6 @@ const getNotes = async (req, res) => {
         user: req.user.id
 
       }).sort({
-
-        isPinned: -1,
 
         createdAt: -1
 
@@ -44,7 +51,12 @@ const getNotes = async (req, res) => {
 // CREATE NOTE
 // ======================
 
-const createNote = async (req, res) => {
+const createNote = async (
+
+  req,
+  res
+
+) => {
 
   try {
 
@@ -58,6 +70,7 @@ const createNote = async (req, res) => {
     } = req.body;
 
     const note =
+
       await Note.create({
 
         title,
@@ -91,7 +104,12 @@ const createNote = async (req, res) => {
 // UPDATE NOTE
 // ======================
 
-const updateNote = async (req, res) => {
+const updateNote = async (
+
+  req,
+  res
+
+) => {
 
   try {
 
@@ -104,15 +122,19 @@ const updateNote = async (req, res) => {
         {
 
           title:
+
             req.body.title,
 
           content:
+
             req.body.content,
 
           labels:
+
             req.body.labels,
 
           isPinned:
+
             req.body.isPinned
 
         },
@@ -147,7 +169,12 @@ const updateNote = async (req, res) => {
 // DELETE NOTE
 // ======================
 
-const deleteNote = async (req, res) => {
+const deleteNote = async (
+
+  req,
+  res
+
+) => {
 
   try {
 
@@ -160,6 +187,7 @@ const deleteNote = async (req, res) => {
     res.json({
 
       message:
+
         "Note deleted"
 
     });
@@ -184,7 +212,7 @@ module.exports = {
 
   getNotes,
   createNote,
- updateNote,
+  updateNote,
   deleteNote
 
 };
