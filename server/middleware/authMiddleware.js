@@ -1,6 +1,10 @@
 const jwt = require("jsonwebtoken");
 
-const protect = (
+// ======================
+// PROTECT
+// ======================
+
+const protect = async (
 
   req,
   res,
@@ -10,27 +14,44 @@ const protect = (
 
   try {
 
-    // lấy token
+    let token;
 
-    const authHeader =
-      req.headers.authorization;
+    // get token
 
-    // không có token
+    if (
 
-    if (!authHeader) {
+      req.headers.authorization &&
+
+      req.headers.authorization.startsWith(
+
+        "Bearer"
+
+      )
+
+    ) {
+
+      token =
+
+        req.headers.authorization.split(
+
+          " "
+
+        )[1];
+
+    }
+
+    // no token
+
+    if (!token) {
 
       return res.status(401).json({
 
-        message: "No token"
+        message:
+          "No token"
 
       });
 
     }
-
-    // Bearer token
-
-    const token =
-      authHeader.split(" ")[1];
 
     // verify token
 
@@ -42,7 +63,7 @@ const protect = (
 
     );
 
-    // lưu user
+    // save user
 
     req.user = decoded;
 
@@ -52,9 +73,12 @@ const protect = (
 
   catch (error) {
 
+    console.log(error);
+
     res.status(401).json({
 
-      message: "Invalid token"
+      message:
+        "Token failed"
 
     });
 
@@ -62,4 +86,8 @@ const protect = (
 
 };
 
-module.exports = protect;
+module.exports = {
+
+  protect
+
+};
