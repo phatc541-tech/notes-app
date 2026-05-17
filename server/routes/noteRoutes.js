@@ -2,6 +2,10 @@ const express = require("express");
 
 const router = express.Router();
 
+// ======================
+// CONTROLLERS
+// ======================
+
 const {
 
   getNotes,
@@ -15,12 +19,24 @@ const {
 } = require("../controllers/noteController");
 
 // ======================
+// MIDDLEWARE
+// ======================
+
+const protect =
+require("../middleware/authMiddleware");
+
+// ======================
 // GET NOTES
 // ======================
 
 router.get(
+
   "/",
+
+  protect,
+
   getNotes
+
 );
 
 // ======================
@@ -28,8 +44,13 @@ router.get(
 // ======================
 
 router.post(
+
   "/",
+
+  protect,
+
   createNote
+
 );
 
 // ======================
@@ -37,8 +58,13 @@ router.post(
 // ======================
 
 router.delete(
+
   "/:id",
+
+  protect,
+
   deleteNote
+
 );
 
 // ======================
@@ -46,8 +72,13 @@ router.delete(
 // ======================
 
 router.put(
+
   "/:id",
+
+  protect,
+
   updateNote
+
 );
 
 module.exports = router;
