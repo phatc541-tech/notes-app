@@ -8,8 +8,13 @@ const getNotes = async (req, res) => {
 
   try {
 
-    const notes =
-      await Note.find();
+    // CHỈ LẤY NOTE USER HIỆN TẠI
+
+    const notes = await Note.find({
+
+      user: req.user.id
+
+    });
 
     res.json(notes);
 
@@ -45,14 +50,17 @@ const createNote = async (req, res) => {
 
     } = req.body;
 
-    const note =
-      await Note.create({
+    // TẠO NOTE THEO USER
 
-        title,
-        content,
-        labels
+    const note = await Note.create({
 
-      });
+      title,
+      content,
+      labels,
+
+      user: req.user.id
+
+    });
 
     res.status(201).json(note);
 
@@ -80,11 +88,13 @@ const deleteNote = async (req, res) => {
 
   try {
 
-    await Note.findByIdAndDelete(
+    await Note.findOneAndDelete({
 
-      req.params.id
+      _id: req.params.id,
 
-    );
+      user: req.user.id
+
+    });
 
     res.json({
 
@@ -117,9 +127,15 @@ const updateNote = async (req, res) => {
   try {
 
     const note =
-      await Note.findByIdAndUpdate(
+      await Note.findOneAndUpdate(
 
-        req.params.id,
+        {
+
+          _id: req.params.id,
+
+          user: req.user.id
+
+        },
 
         req.body,
 
