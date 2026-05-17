@@ -1,15 +1,11 @@
-const User = require(
-
-  "../models/User"
-
-);
+const User = require("../models/User");
 
 const bcrypt = require("bcryptjs");
 
 const jwt = require("jsonwebtoken");
 
 // ======================
-// GENERATE TOKEN
+// TOKEN
 // ======================
 
 const generateToken = (id) => {
@@ -122,7 +118,9 @@ const register = async (
 
     res.status(500).json({
 
-      message: error.message
+      message:
+
+        "Register failed"
 
     });
 
@@ -214,7 +212,9 @@ const login = async (
 
     res.status(500).json({
 
-      message: error.message
+      message:
+
+        "Login failed"
 
     });
 
@@ -223,7 +223,7 @@ const login = async (
 };
 
 // ======================
-// GET PROFILE
+// PROFILE
 // ======================
 
 const getProfile = async (
@@ -255,7 +255,7 @@ const getProfile = async (
 
       message:
 
-        "Failed to get profile"
+        "Profile failed"
 
     });
 
@@ -318,23 +318,7 @@ const updateProfile = async (
 
       await user.save();
 
-    res.json({
-
-      _id: updatedUser._id,
-
-      username:
-
-        updatedUser.username,
-
-      email:
-
-        updatedUser.email,
-
-      avatar:
-
-        updatedUser.avatar
-
-    });
+    res.json(updatedUser);
 
   }
 
@@ -346,99 +330,7 @@ const updateProfile = async (
 
       message:
 
-        "Update profile failed"
-
-    });
-
-  }
-
-};
-
-// ======================
-// CHANGE PASSWORD
-// ======================
-
-const changePassword = async (
-
-  req,
-  res
-
-) => {
-
-  try {
-
-    const {
-
-      oldPassword,
-      newPassword
-
-    } = req.body;
-
-    const user =
-
-      await User.findById(
-
-        req.user.id
-
-      );
-
-    const isMatch =
-
-      await bcrypt.compare(
-
-        oldPassword,
-
-        user.password
-
-      );
-
-    if (!isMatch) {
-
-      return res.status(400).json({
-
-        message:
-
-          "Old password incorrect"
-
-      });
-
-    }
-
-    const salt =
-
-      await bcrypt.genSalt(10);
-
-    user.password =
-
-      await bcrypt.hash(
-
-        newPassword,
-
-        salt
-
-      );
-
-    await user.save();
-
-    res.json({
-
-      message:
-
-        "Password changed"
-
-    });
-
-  }
-
-  catch (error) {
-
-    console.log(error);
-
-    res.status(500).json({
-
-      message:
-
-        "Change password failed"
+        "Update failed"
 
     });
 
@@ -452,7 +344,6 @@ module.exports = {
   login,
 
   getProfile,
-  updateProfile,
-  changePassword
+  updateProfile
 
 };

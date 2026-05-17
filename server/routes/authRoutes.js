@@ -6,9 +6,9 @@ const {
 
   register,
   login,
+
   getProfile,
-  updateProfile,
-  changePassword
+  updateProfile
 
 } = require(
 
@@ -71,20 +71,6 @@ router.put(
   protect,
 
   updateProfile
-
-);
-
-// ======================
-// CHANGE PASSWORD
-// ======================
-
-router.put(
-
-  "/change-password",
-
-  protect,
-
-  changePassword
 
 );
 
