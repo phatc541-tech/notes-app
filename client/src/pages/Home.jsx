@@ -46,6 +46,9 @@ function Home() {
   const [darkMode, setDarkMode] =
     useState(false);
 
+  const [isPinned, setIsPinned] =
+    useState(false);
+
   // ======================
   // FETCH NOTES
   // ======================
@@ -114,7 +117,8 @@ function Home() {
 
               title,
               content,
-              labels
+              labels,
+              isPinned
 
             }
 
@@ -150,7 +154,8 @@ function Home() {
 
               title,
               content,
-              labels
+              labels,
+              isPinned
 
             }
 
@@ -174,6 +179,8 @@ function Home() {
       setLabels("");
 
       setEditingId(null);
+
+      setIsPinned(false);
 
     }
 
@@ -243,6 +250,8 @@ function Home() {
 
     setEditingId(note._id);
 
+    setIsPinned(note.isPinned);
+
     window.scrollTo({
 
       top: 0,
@@ -267,21 +276,34 @@ function Home() {
   };
 
   // ======================
-  // SEARCH
+  // SEARCH + PIN
   // ======================
 
   const filteredNotes =
-    notes.filter((note) =>
 
-      note.title
-        ?.toLowerCase()
-        .includes(
+    [...notes]
 
-          search.toLowerCase()
+      .sort(
 
-        )
+        (a, b) =>
 
-    );
+          b.isPinned -
+
+          a.isPinned
+
+      )
+
+      .filter((note) =>
+
+        note.title
+          ?.toLowerCase()
+          .includes(
+
+            search.toLowerCase()
+
+          )
+
+      );
 
   return (
 
@@ -291,15 +313,17 @@ function Home() {
 
         padding: "20px",
 
+        maxWidth: "1200px",
+
+        margin: "0 auto",
+
         background:
 
           darkMode
             ? "#121212"
             : "#f5f5f5",
 
-        minHeight: "100vh",
-
-        transition: "0.3s"
+        minHeight: "100vh"
 
       }}
 
@@ -374,9 +398,9 @@ function Home() {
 
               borderRadius: "8px",
 
-              cursor: "pointer",
+              marginRight: "10px",
 
-              marginRight: "10px"
+              cursor: "pointer"
 
             }}
 
@@ -456,6 +480,8 @@ function Home() {
 
       >
 
+        {/* TITLE */}
+
         <input
 
           type="text"
@@ -488,6 +514,8 @@ function Home() {
           }}
 
         />
+
+        {/* CONTENT */}
 
         <textarea
 
@@ -522,6 +550,8 @@ function Home() {
 
         />
 
+        {/* LABELS */}
+
         <input
 
           type="text"
@@ -554,6 +584,42 @@ function Home() {
           }}
 
         />
+
+        {/* PIN */}
+
+        <div
+          style={{
+            marginBottom: "15px"
+          }}
+        >
+
+          <label>
+
+            <input
+
+              type="checkbox"
+
+              checked={isPinned}
+
+              onChange={(e) =>
+
+                setIsPinned(
+
+                  e.target.checked
+
+                )
+
+              }
+
+            />
+
+            {" "}Pin Note
+
+          </label>
+
+        </div>
+
+        {/* SAVE */}
 
         <button
 
@@ -716,7 +782,7 @@ function Home() {
 
             viewMode === "grid"
 
-              ? "repeat(auto-fit,minmax(250px,1fr))"
+              ? "repeat(auto-fit,minmax(280px,1fr))"
 
               : "1fr",
 
@@ -761,6 +827,13 @@ function Home() {
             >
 
               <h2>
+
+                {
+
+                  note.isPinned &&
+                  "📌 "
+
+                }
 
                 {note.title}
 

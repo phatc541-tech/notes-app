@@ -16,6 +16,8 @@ const getNotes = async (req, res) => {
 
       }).sort({
 
+        isPinned: -1,
+
         createdAt: -1
 
       });
@@ -50,7 +52,8 @@ const createNote = async (req, res) => {
 
       title,
       content,
-      labels
+      labels,
+      isPinned
 
     } = req.body;
 
@@ -60,6 +63,7 @@ const createNote = async (req, res) => {
         title,
         content,
         labels,
+        isPinned,
 
         user: req.user.id
 
@@ -106,7 +110,10 @@ const updateNote = async (req, res) => {
             req.body.content,
 
           labels:
-            req.body.labels
+            req.body.labels,
+
+          isPinned:
+            req.body.isPinned
 
         },
 
@@ -177,7 +184,7 @@ module.exports = {
 
   getNotes,
   createNote,
-  updateNote,
+ updateNote,
   deleteNote
 
 };
