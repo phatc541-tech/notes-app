@@ -95,23 +95,35 @@ function Home() {
 
       if (editingId) {
 
-        await api.put(
+        const res =
 
-          `/notes/${editingId}`,
+          await api.put(
 
-          {
+            `/notes/${editingId}`,
 
-            title,
-            content,
-            labels
+            {
 
-          }
+              title,
+              content,
+              labels
+
+            }
+
+          );
+
+        setNotes(
+
+          notes.map((note) =>
+
+            note._id === editingId
+
+              ? res.data
+
+              : note
+
+          )
 
         );
-
-        // reload notes
-
-        fetchNotes();
 
       }
 
@@ -137,18 +149,19 @@ function Home() {
 
           );
 
-        // thêm note mới xuống dưới ngay
+        // thêm note mới ngay
 
         setNotes((prev) => [
 
           res.data,
+
           ...prev
 
         ]);
 
       }
 
-      // reset form
+      // clear form
 
       setTitle("");
 
@@ -163,6 +176,12 @@ function Home() {
     catch (error) {
 
       console.log(error);
+
+      alert(
+
+        "Save note failed"
+
+      );
 
     }
 
@@ -181,8 +200,6 @@ function Home() {
         `/notes/${id}`
 
       );
-
-      // xóa ngay trên UI
 
       setNotes(
 
@@ -481,9 +498,7 @@ function Home() {
 
             cursor: "pointer",
 
-            fontWeight: "bold",
-
-            marginRight: "10px"
+            fontWeight: "bold"
 
           }}
 

@@ -4,9 +4,13 @@ const api = axios.create({
 
   baseURL:
 
-    "https://notes-app-2-lppk.onrender.com/api"
+    "https://YOUR-RENDER-LINK.onrender.com/api"
 
 });
+
+// ======================
+// TOKEN
+// ======================
 
 api.interceptors.request.use(
 
@@ -20,6 +24,7 @@ api.interceptors.request.use(
     if (token) {
 
       config.headers.Authorization =
+
         `Bearer ${token}`;
 
     }
