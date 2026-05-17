@@ -368,6 +368,40 @@ function Home() {
 
         <div>
 
+          {/* PROFILE */}
+
+          <button
+
+            onClick={() =>
+
+              navigate("/profile")
+
+            }
+
+            style={{
+
+              background: "purple",
+
+              color: "white",
+
+              border: "none",
+
+              padding: "12px 18px",
+
+              borderRadius: "8px",
+
+              marginRight: "10px",
+
+              cursor: "pointer"
+
+            }}
+
+          >
+
+            Profile
+
+          </button>
+
           {/* DARK MODE */}
 
           <button
