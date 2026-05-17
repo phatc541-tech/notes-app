@@ -107,48 +107,41 @@ function Home() {
 
         );
 
-        fetchNotes();
-
       }
 
       // CREATE
 
       else {
 
-        const res =
-          await api.post(
+        await api.post(
 
-            "/notes",
+          "/notes",
 
-            {
+          {
 
-              title,
-              content,
-              labels
+            title,
+            content,
+            labels
 
-            }
+          }
 
-          );
-
-        // thêm note mới
-
-        setNotes((prev) => [
-
-          res.data,
-
-          ...prev
-
-        ]);
-
-        // reset form
-
-        setTitle("");
-
-        setContent("");
-
-        setLabels("");
+        );
 
       }
+
+      // reset
+
+      setTitle("");
+
+      setContent("");
+
+      setLabels("");
+
+      setEditingId(null);
+
+      // reload
+
+      fetchNotes();
 
     }
 
@@ -159,43 +152,6 @@ function Home() {
     }
 
   };
-
-  // ======================
-  // AUTO SAVE
-  // ======================
-
-  useEffect(() => {
-
-    // không autosave khi edit
-
-    if (editingId) return;
-
-    // không save nếu trống
-
-    if (
-
-      !title.trim() &&
-      !content.trim()
-
-    ) return;
-
-    const delay = setTimeout(() => {
-
-      saveNote();
-
-    }, 2000);
-
-    return () =>
-
-      clearTimeout(delay);
-
-  }, [
-
-    title,
-    content,
-    labels
-
-  ]);
 
   // ======================
   // DELETE NOTE
@@ -236,48 +192,6 @@ function Home() {
     setLabels(note.labels);
 
     setEditingId(note._id);
-
-  };
-
-  // ======================
-  // UPDATE NOTE
-  // ======================
-
-  const updateNote = async () => {
-
-    try {
-
-      await api.put(
-
-        `/notes/${editingId}`,
-
-        {
-
-          title,
-          content,
-          labels
-
-        }
-
-      );
-
-      setEditingId(null);
-
-      setTitle("");
-
-      setContent("");
-
-      setLabels("");
-
-      fetchNotes();
-
-    }
-
-    catch (error) {
-
-      console.log(error);
-
-    }
 
   };
 
@@ -361,9 +275,7 @@ function Home() {
 
             padding: "10px",
 
-            borderRadius: "5px",
-
-            cursor: "pointer"
+            borderRadius: "5px"
 
           }}
 
@@ -375,7 +287,7 @@ function Home() {
 
       </div>
 
-      {/* CREATE NOTE */}
+      {/* CREATE */}
 
       <div
 
@@ -387,10 +299,7 @@ function Home() {
 
           borderRadius: "10px",
 
-          marginBottom: "20px",
-
-          boxShadow:
-            "0 0 10px rgba(0,0,0,0.1)"
+          marginBottom: "20px"
 
         }}
 
@@ -412,18 +321,15 @@ function Home() {
 
           }
 
+          onBlur={saveNote}
+
           style={{
 
             width: "100%",
 
             padding: "10px",
 
-            marginBottom: "10px",
-
-            borderRadius: "5px",
-
-            border:
-              "1px solid #ccc"
+            marginBottom: "10px"
 
           }}
 
@@ -443,6 +349,8 @@ function Home() {
 
           }
 
+          onBlur={saveNote}
+
           style={{
 
             width: "100%",
@@ -451,12 +359,7 @@ function Home() {
 
             padding: "10px",
 
-            marginBottom: "10px",
-
-            borderRadius: "5px",
-
-            border:
-              "1px solid #ccc"
+            marginBottom: "10px"
 
           }}
 
@@ -478,69 +381,23 @@ function Home() {
 
           }
 
+          onBlur={saveNote}
+
           style={{
 
             width: "100%",
 
-            padding: "10px",
-
-            marginBottom: "10px",
-
-            borderRadius: "5px",
-
-            border:
-              "1px solid #ccc"
+            padding: "10px"
 
           }}
 
         />
 
-        {
+        <p>
 
-          editingId ? (
+          Auto save when click outside
 
-            <button
-
-              onClick={updateNote}
-
-              style={{
-
-                background:
-                  "orange",
-
-                color: "white",
-
-                border: "none",
-
-                padding: "10px",
-
-                borderRadius: "5px",
-
-                cursor: "pointer"
-
-              }}
-
-            >
-
-              Update Note
-
-            </button>
-
-          ) : (
-
-            <p
-              style={{
-                color: "gray"
-              }}
-            >
-
-              Auto saving...
-
-            </p>
-
-          )
-
-        }
+        </p>
 
       </div>
 
@@ -568,18 +425,13 @@ function Home() {
 
           padding: "10px",
 
-          marginBottom: "20px",
-
-          borderRadius: "5px",
-
-          border:
-            "1px solid #ccc"
+          marginBottom: "20px"
 
         }}
 
       />
 
-      {/* VIEW MODE */}
+      {/* VIEW */}
 
       <div
         style={{
@@ -594,24 +446,6 @@ function Home() {
             setViewMode("list")
 
           }
-
-          style={{
-
-            background: "blue",
-
-            color: "white",
-
-            border: "none",
-
-            padding: "10px",
-
-            borderRadius: "5px",
-
-            marginRight: "10px",
-
-            cursor: "pointer"
-
-          }}
 
         >
 
@@ -628,19 +462,7 @@ function Home() {
           }
 
           style={{
-
-            background: "green",
-
-            color: "white",
-
-            border: "none",
-
-            padding: "10px",
-
-            borderRadius: "5px",
-
-            cursor: "pointer"
-
+            marginLeft: "10px"
           }}
 
         >
@@ -685,10 +507,7 @@ function Home() {
 
               padding: "15px",
 
-              borderRadius: "10px",
-
-              boxShadow:
-                "0 0 10px rgba(0,0,0,0.1)"
+              borderRadius: "10px"
 
             }}
 
@@ -712,78 +531,39 @@ function Home() {
 
             </p>
 
-            <div
-              style={{
-                marginTop: "10px"
-              }}
+            <button
+
+              onClick={() =>
+
+                editNote(note)
+
+              }
+
             >
 
-              <button
+              Edit
 
-                onClick={() =>
+            </button>
 
-                  editNote(note)
+            <button
 
-                }
+              onClick={() =>
 
-                style={{
+                deleteNote(
+                  note._id
+                )
 
-                  background:
-                    "orange",
+              }
 
-                  color: "white",
+              style={{
+                marginLeft: "10px"
+              }}
 
-                  border: "none",
+            >
 
-                  padding: "10px",
+              Delete
 
-                  borderRadius: "5px",
-
-                  marginRight: "10px",
-
-                  cursor: "pointer"
-
-                }}
-
-              >
-
-                Edit
-
-              </button>
-
-              <button
-
-                onClick={() =>
-
-                  deleteNote(
-                    note._id
-                  )
-
-                }
-
-                style={{
-
-                  background: "red",
-
-                  color: "white",
-
-                  border: "none",
-
-                  padding: "10px",
-
-                  borderRadius: "5px",
-
-                  cursor: "pointer"
-
-                }}
-
-              >
-
-                Delete
-
-              </button>
-
-            </div>
+            </button>
 
           </div>
 
