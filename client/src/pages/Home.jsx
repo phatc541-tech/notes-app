@@ -58,9 +58,30 @@ function Home() {
     try {
 
       const res =
-        await api.get("/notes");
+
+        await api.get(
+
+          "/notes"
+
+        );
 
       setNotes(res.data);
+
+      // ======================
+      // SAVE OFFLINE
+      // ======================
+
+      localStorage.setItem(
+
+        "offline_notes",
+
+        JSON.stringify(
+
+          res.data
+
+        )
+
+      );
 
     }
 
@@ -68,13 +89,57 @@ function Home() {
 
       console.log(error);
 
+      // ======================
+      // LOAD OFFLINE
+      // ======================
+
+      const offlineNotes =
+
+        JSON.parse(
+
+          localStorage.getItem(
+
+            "offline_notes"
+
+          )
+
+        );
+
+      if (offlineNotes) {
+
+        setNotes(
+
+          offlineNotes
+
+        );
+
+      }
+
     }
 
   };
 
+  // ======================
+  // REALTIME
+  // ======================
+
   useEffect(() => {
 
     fetchNotes();
+
+    const interval =
+
+      setInterval(
+
+        fetchNotes,
+
+        3000
+
+      );
+
+    return () =>
+
+      clearInterval(interval);
 
   }, []);
 
@@ -89,6 +154,7 @@ function Home() {
       if (
 
         !title.trim() ||
+
         !content.trim()
 
       ) {
@@ -262,13 +328,39 @@ function Home() {
   };
 
   // ======================
+  // SHARE NOTE
+  // ======================
+
+  const shareNote = (id) => {
+
+    const shareLink =
+
+      `${window.location.origin}/share/${id}`;
+
+    navigator.clipboard.writeText(
+
+      shareLink
+
+    );
+
+    alert(
+
+      "Share link copied"
+
+    );
+
+  };
+
+  // ======================
   // LOGOUT
   // ======================
 
   const logout = () => {
 
     localStorage.removeItem(
+
       "token"
+
     );
 
     navigate("/login");
@@ -276,7 +368,7 @@ function Home() {
   };
 
   // ======================
-  // SEARCH + PIN
+  // FILTER NOTES
   // ======================
 
   const filteredNotes =
@@ -368,8 +460,6 @@ function Home() {
 
         <div>
 
-          {/* PROFILE */}
-
           <button
 
             onClick={() =>
@@ -401,8 +491,6 @@ function Home() {
             Profile
 
           </button>
-
-          {/* DARK MODE */}
 
           <button
 
@@ -449,8 +537,6 @@ function Home() {
             }
 
           </button>
-
-          {/* LOGOUT */}
 
           <button
 
@@ -504,17 +590,11 @@ function Home() {
 
           borderRadius: "12px",
 
-          marginBottom: "20px",
-
-          boxShadow:
-
-            "0 0 10px rgba(0,0,0,0.1)"
+          marginBottom: "20px"
 
         }}
 
       >
-
-        {/* TITLE */}
 
         <input
 
@@ -538,18 +618,11 @@ function Home() {
 
             padding: "12px",
 
-            marginBottom: "10px",
-
-            borderRadius: "8px",
-
-            border:
-              "1px solid #ccc"
+            marginBottom: "10px"
 
           }}
 
         />
-
-        {/* CONTENT */}
 
         <textarea
 
@@ -573,18 +646,11 @@ function Home() {
 
             padding: "12px",
 
-            marginBottom: "10px",
-
-            borderRadius: "8px",
-
-            border:
-              "1px solid #ccc"
+            marginBottom: "10px"
 
           }}
 
         />
-
-        {/* LABELS */}
 
         <input
 
@@ -608,18 +674,11 @@ function Home() {
 
             padding: "12px",
 
-            marginBottom: "15px",
-
-            borderRadius: "8px",
-
-            border:
-              "1px solid #ccc"
+            marginBottom: "15px"
 
           }}
 
         />
-
-        {/* PIN */}
 
         <div
           style={{
@@ -653,8 +712,6 @@ function Home() {
 
         </div>
 
-        {/* SAVE */}
-
         <button
 
           onClick={saveNote}
@@ -673,11 +730,7 @@ function Home() {
 
             padding: "12px 20px",
 
-            borderRadius: "8px",
-
-            cursor: "pointer",
-
-            fontWeight: "bold"
+            borderRadius: "8px"
 
           }}
 
@@ -719,18 +772,13 @@ function Home() {
 
           padding: "12px",
 
-          marginBottom: "20px",
-
-          borderRadius: "8px",
-
-          border:
-            "1px solid #ccc"
+          marginBottom: "20px"
 
         }}
 
       />
 
-      {/* VIEW MODE */}
+      {/* VIEW */}
 
       <div
         style={{
@@ -758,8 +806,6 @@ function Home() {
             border: "none",
 
             padding: "10px 16px",
-
-            borderRadius: "8px",
 
             marginRight: "10px"
 
@@ -790,9 +836,7 @@ function Home() {
 
             border: "none",
 
-            padding: "10px 16px",
-
-            borderRadius: "8px"
+            padding: "10px 16px"
 
           }}
 
@@ -850,11 +894,7 @@ function Home() {
 
                 padding: "20px",
 
-                borderRadius: "12px",
-
-                boxShadow:
-
-                  "0 0 10px rgba(0,0,0,0.1)"
+                borderRadius: "12px"
 
               }}
 
@@ -911,9 +951,6 @@ function Home() {
                     padding:
                       "10px 15px",
 
-                    borderRadius:
-                      "8px",
-
                     marginRight:
                       "10px"
 
@@ -947,14 +984,44 @@ function Home() {
                     padding:
                       "10px 15px",
 
-                    borderRadius:
-                      "8px"
+                    marginRight:
+                      "10px"
 
                   }}
 
                 >
 
                   Delete
+
+                </button>
+
+                <button
+
+                  onClick={() =>
+
+                    shareNote(
+                      note._id
+                    )
+
+                  }
+
+                  style={{
+
+                    background:
+                      "green",
+
+                    color: "white",
+
+                    border: "none",
+
+                    padding:
+                      "10px 15px"
+
+                  }}
+
+                >
+
+                  Share
 
                 </button>
 
