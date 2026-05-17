@@ -106,6 +106,8 @@ const register = async (
 
       email: user.email,
 
+      avatar: user.avatar,
+
       token:
 
         generateToken(user._id)
@@ -251,7 +253,100 @@ const getProfile = async (
 
     res.status(500).json({
 
-      message: error.message
+      message:
+
+        "Failed to get profile"
+
+    });
+
+  }
+
+};
+
+// ======================
+// UPDATE PROFILE
+// ======================
+
+const updateProfile = async (
+
+  req,
+  res
+
+) => {
+
+  try {
+
+    const user =
+
+      await User.findById(
+
+        req.user.id
+
+      );
+
+    if (!user) {
+
+      return res.status(404).json({
+
+        message:
+
+          "User not found"
+
+      });
+
+    }
+
+    user.username =
+
+      req.body.username ||
+
+      user.username;
+
+    user.email =
+
+      req.body.email ||
+
+      user.email;
+
+    user.avatar =
+
+      req.body.avatar ||
+
+      user.avatar;
+
+    const updatedUser =
+
+      await user.save();
+
+    res.json({
+
+      _id: updatedUser._id,
+
+      username:
+
+        updatedUser.username,
+
+      email:
+
+        updatedUser.email,
+
+      avatar:
+
+        updatedUser.avatar
+
+    });
+
+  }
+
+  catch (error) {
+
+    console.log(error);
+
+    res.status(500).json({
+
+      message:
+
+        "Update profile failed"
 
     });
 
@@ -341,7 +436,9 @@ const changePassword = async (
 
     res.status(500).json({
 
-      message: error.message
+      message:
+
+        "Change password failed"
 
     });
 
@@ -355,6 +452,7 @@ module.exports = {
   login,
 
   getProfile,
+  updateProfile,
   changePassword
 
 };

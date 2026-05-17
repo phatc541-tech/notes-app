@@ -51,7 +51,7 @@ router.post(
 );
 
 // ======================
-// GET PROFILE
+// PROFILE
 // ======================
 
 router.get(
@@ -63,10 +63,6 @@ router.get(
   getProfile
 
 );
-
-// ======================
-// UPDATE PROFILE
-// ======================
 
 router.put(
 
