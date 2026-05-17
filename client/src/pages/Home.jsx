@@ -120,18 +120,6 @@ function Home() {
 
       }
 
-      // RESET
-
-      setTitle("");
-
-      setContent("");
-
-      setLabels("");
-
-      setEditingId(null);
-
-      // REFRESH
-
       fetchNotes();
 
     }
@@ -143,6 +131,39 @@ function Home() {
     }
 
   };
+
+  // ======================
+  // AUTO SAVE
+  // ======================
+
+  useEffect(() => {
+
+    // không autosave nếu trống
+
+    if (
+
+      !title &&
+      !content
+
+    ) return;
+
+    const delay = setTimeout(() => {
+
+      saveNote();
+
+    }, 2000);
+
+    return () =>
+
+      clearTimeout(delay);
+
+  }, [
+
+    title,
+    content,
+    labels
+
+  ]);
 
   // ======================
   // DELETE NOTE
@@ -221,7 +242,9 @@ function Home() {
 
     <div
       style={{
-        padding: "20px"
+        padding: "20px",
+        background: "#f5f5f5",
+        minHeight: "100vh"
       }}
     >
 
@@ -244,7 +267,11 @@ function Home() {
 
       >
 
-        <h1>My Notes</h1>
+        <h1>
+
+          My Notes
+
+        </h1>
 
         <button
 
@@ -260,7 +287,9 @@ function Home() {
 
             padding: "10px",
 
-            borderRadius: "5px"
+            borderRadius: "5px",
+
+            cursor: "pointer"
 
           }}
 
@@ -278,13 +307,16 @@ function Home() {
 
         style={{
 
-          border: "1px solid #ccc",
+          background: "white",
 
           padding: "20px",
 
           borderRadius: "10px",
 
-          marginBottom: "20px"
+          marginBottom: "20px",
+
+          boxShadow:
+            "0 0 10px rgba(0,0,0,0.1)"
 
         }}
 
@@ -312,7 +344,12 @@ function Home() {
 
             padding: "10px",
 
-            marginBottom: "10px"
+            marginBottom: "10px",
+
+            borderRadius: "5px",
+
+            border:
+              "1px solid #ccc"
 
           }}
 
@@ -340,7 +377,12 @@ function Home() {
 
             padding: "10px",
 
-            marginBottom: "10px"
+            marginBottom: "10px",
+
+            borderRadius: "5px",
+
+            border:
+              "1px solid #ccc"
 
           }}
 
@@ -368,43 +410,26 @@ function Home() {
 
             padding: "10px",
 
-            marginBottom: "10px"
+            marginBottom: "10px",
+
+            borderRadius: "5px",
+
+            border:
+              "1px solid #ccc"
 
           }}
 
         />
 
-        <button
-
-          onClick={saveNote}
-
+        <p
           style={{
-
-            background: "green",
-
-            color: "white",
-
-            border: "none",
-
-            padding: "10px",
-
-            borderRadius: "5px"
-
+            color: "gray"
           }}
-
         >
 
-          {
+          Auto saving...
 
-            editingId
-
-              ? "Update"
-
-              : "Save"
-
-          }
-
-        </button>
+        </p>
 
       </div>
 
@@ -432,13 +457,18 @@ function Home() {
 
           padding: "10px",
 
-          marginBottom: "20px"
+          marginBottom: "20px",
+
+          borderRadius: "5px",
+
+          border:
+            "1px solid #ccc"
 
         }}
 
       />
 
-      {/* VIEW BUTTON */}
+      {/* VIEW MODE */}
 
       <div
         style={{
@@ -466,7 +496,9 @@ function Home() {
 
             borderRadius: "5px",
 
-            marginRight: "10px"
+            marginRight: "10px",
+
+            cursor: "pointer"
 
           }}
 
@@ -494,7 +526,9 @@ function Home() {
 
             padding: "10px",
 
-            borderRadius: "5px"
+            borderRadius: "5px",
+
+            cursor: "pointer"
 
           }}
 
@@ -518,7 +552,7 @@ function Home() {
 
             viewMode === "grid"
 
-              ? "repeat(3, 1fr)"
+              ? "repeat(auto-fit,minmax(250px,1fr))"
 
               : "1fr",
 
@@ -536,12 +570,14 @@ function Home() {
 
             style={{
 
-              border:
-                "1px solid #ccc",
+              background: "white",
 
               padding: "15px",
 
-              borderRadius: "10px"
+              borderRadius: "10px",
+
+              boxShadow:
+                "0 0 10px rgba(0,0,0,0.1)"
 
             }}
 
@@ -561,74 +597,84 @@ function Home() {
 
             <p>
 
-              {note.labels}
+              #{note.labels}
 
             </p>
 
-            {/* EDIT */}
+            {/* BUTTONS */}
 
-            <button
-
-              onClick={() =>
-
-                editNote(note)
-
-              }
-
+            <div
               style={{
-
-                background:
-                  "orange",
-
-                color: "white",
-
-                border: "none",
-
-                padding: "10px",
-
-                borderRadius: "5px",
-
-                marginRight: "10px"
-
+                marginTop: "10px"
               }}
-
             >
 
-              Edit
+              <button
 
-            </button>
+                onClick={() =>
 
-            {/* DELETE */}
+                  editNote(note)
 
-            <button
+                }
 
-              onClick={() =>
+                style={{
 
-                deleteNote(
-                  note._id
-                )
+                  background:
+                    "orange",
 
-              }
+                  color: "white",
 
-              style={{
+                  border: "none",
 
-                background: "red",
+                  padding: "10px",
 
-                color: "white",
+                  borderRadius: "5px",
 
-                border: "none",
+                  marginRight: "10px",
 
-                padding: "10px",
+                  cursor: "pointer"
 
-                borderRadius: "5px"
+                }}
 
-              }}
+              >
 
-            >
+                Edit
 
-              Delete
+              </button>
 
-            </button>
+              <button
+
+                onClick={() =>
+
+                  deleteNote(
+                    note._id
+                  )
+
+                }
+
+                style={{
+
+                  background: "red",
+
+                  color: "white",
+
+                  border: "none",
+
+                  padding: "10px",
+
+                  borderRadius: "5px",
+
+                  cursor: "pointer"
+
+                }}
+
+              >
+
+                Delete
+
+              </button>
+
+            </div>
 
           </div>
 
