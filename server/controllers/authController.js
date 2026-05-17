@@ -90,7 +90,9 @@ const register = async (
 
         password:
 
-          hashedPassword
+          hashedPassword,
+
+        isActivated: false
 
       });
 
@@ -103,6 +105,9 @@ const register = async (
       email: user.email,
 
       avatar: user.avatar,
+
+      isActivated:
+        user.isActivated,
 
       token:
 
@@ -156,45 +161,11 @@ const login = async (
 
       });
 
-    if (
+    // USER NOT FOUND
 
-      user &&
+    if (!user) {
 
-      (
-
-        await bcrypt.compare(
-
-          password,
-
-          user.password
-
-        )
-
-      )
-
-    ) {
-
-      res.json({
-
-        _id: user._id,
-
-        username: user.username,
-
-        email: user.email,
-
-        avatar: user.avatar,
-
-        token:
-
-          generateToken(user._id)
-
-      });
-
-    }
-
-    else {
-
-      res.status(401).json({
+      return res.status(401).json({
 
         message:
 
@@ -203,6 +174,65 @@ const login = async (
       });
 
     }
+
+    // PASSWORD CHECK
+
+    const isMatch =
+
+      await bcrypt.compare(
+
+        password,
+
+        user.password
+
+      );
+
+    if (!isMatch) {
+
+      return res.status(401).json({
+
+        message:
+
+          "Invalid email or password"
+
+      });
+
+    }
+
+    // ACCOUNT ACTIVATION CHECK
+
+    if (!user.isActivated) {
+
+      return res.status(401).json({
+
+        message:
+
+          "Please activate your account first"
+
+      });
+
+    }
+
+    // LOGIN SUCCESS
+
+    res.json({
+
+      _id: user._id,
+
+      username: user.username,
+
+      email: user.email,
+
+      avatar: user.avatar,
+
+      isActivated:
+        user.isActivated,
+
+      token:
+
+        generateToken(user._id)
+
+    });
 
   }
 
@@ -344,7 +374,11 @@ const updateProfile = async (
 
       avatar:
 
-        updatedUser.avatar
+        updatedUser.avatar,
+
+      isActivated:
+
+        updatedUser.isActivated
 
     });
 
@@ -470,6 +504,151 @@ const changePassword = async (
 
 };
 
+// ======================
+// RESET PASSWORD
+// ======================
+
+const resetPassword = async (
+
+  req,
+  res
+
+) => {
+
+  try {
+
+    const {
+
+      email,
+      newPassword
+
+    } = req.body;
+
+    const user =
+
+      await User.findOne({
+
+        email
+
+      });
+
+    if (!user) {
+
+      return res.status(404).json({
+
+        message:
+
+          "User not found"
+
+      });
+
+    }
+
+    const salt =
+
+      await bcrypt.genSalt(10);
+
+    user.password =
+
+      await bcrypt.hash(
+
+        newPassword,
+
+        salt
+
+      );
+
+    await user.save();
+
+    res.json({
+
+      message:
+
+        "Password reset success"
+
+    });
+
+  }
+
+  catch (error) {
+
+    console.log(error);
+
+    res.status(500).json({
+
+      message:
+
+        "Reset password failed"
+
+    });
+
+  }
+
+};
+
+// ======================
+// ACTIVATE ACCOUNT
+// ======================
+
+const activateAccount = async (
+
+  req,
+  res
+
+) => {
+
+  try {
+
+    const user =
+
+      await User.findById(
+
+        req.user.id
+
+      );
+
+    if (!user) {
+
+      return res.status(404).json({
+
+        message:
+
+          "User not found"
+
+      });
+
+    }
+
+    user.isActivated = true;
+
+    await user.save();
+
+    res.json({
+
+      message:
+
+        "Account activated"
+
+    });
+
+  }
+
+  catch (error) {
+
+    console.log(error);
+
+    res.status(500).json({
+
+      message:
+
+        "Activation failed"
+
+    });
+
+  }
+
+};
+
 module.exports = {
 
   register,
@@ -478,6 +657,9 @@ module.exports = {
   getProfile,
   updateProfile,
 
-  changePassword
+  changePassword,
+ resetPassword,
+
+  activateAccount
 
 };
