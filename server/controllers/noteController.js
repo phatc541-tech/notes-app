@@ -1,91 +1,166 @@
 const Note = require("../models/Note");
 
-// create note
+// ======================
+// GET NOTES
+// ======================
+
+const getNotes = async (req, res) => {
+
+  try {
+
+    const notes =
+      await Note.find();
+
+    res.json(notes);
+
+  }
+
+  catch (error) {
+
+    console.log(error);
+
+    res.status(500).json({
+
+      message: "Get notes failed"
+
+    });
+
+  }
+
+};
+
+// ======================
+// CREATE NOTE
+// ======================
+
 const createNote = async (req, res) => {
 
   try {
 
     const {
+
       title,
       content,
       labels
+
     } = req.body;
 
-    const note = await Note.create({
+    const note =
+      await Note.create({
 
-      title,
-      content,
-      labels
+        title,
+        content,
+        labels
 
-    });
+      });
 
     res.status(201).json(note);
 
-  } catch (error) {
+  }
+
+  catch (error) {
+
+    console.log(error);
 
     res.status(500).json({
 
-      message: error.message
+      message: "Create note failed"
 
     });
 
   }
+
 };
 
-// get notes
-const getNotes = async (req, res) => {
+// ======================
+// DELETE NOTE
+// ======================
 
-  try {
-
-    const notes = await Note.find()
-
-      .sort({
-        createdAt: -1
-      });
-
-    res.status(200).json(notes);
-
-  } catch (error) {
-
-    res.status(500).json({
-
-      message: error.message
-
-    });
-
-  }
-};
-
-// delete note
 const deleteNote = async (req, res) => {
 
   try {
 
     await Note.findByIdAndDelete(
+
       req.params.id
+
     );
 
-    res.status(200).json({
+    res.json({
 
       message: "Deleted"
 
     });
 
-  } catch (error) {
+  }
+
+  catch (error) {
+
+    console.log(error);
 
     res.status(500).json({
 
-      message: error.message
+      message: "Delete failed"
 
     });
 
   }
+
 };
+
+// ======================
+// UPDATE NOTE
+// ======================
+
+const updateNote = async (req, res) => {
+
+  try {
+
+    const note =
+      await Note.findByIdAndUpdate(
+
+        req.params.id,
+
+        req.body,
+
+        {
+
+          new: true
+
+        }
+
+      );
+
+    res.json(note);
+
+  }
+
+  catch (error) {
+
+    console.log(error);
+
+    res.status(500).json({
+
+      message: "Update failed"
+
+    });
+
+  }
+
+};
+
+// ======================
+// EXPORT
+// ======================
 
 module.exports = {
 
-  createNote,
   getNotes,
-  deleteNote
+
+  createNote,
+
+  deleteNote,
+
+  updateNote
 
 };
