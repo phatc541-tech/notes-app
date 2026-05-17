@@ -24,6 +24,12 @@ function Profile() {
   const [loading, setLoading] =
     useState(true);
 
+  const [oldPassword, setOldPassword] =
+    useState("");
+
+  const [newPassword, setNewPassword] =
+    useState("");
+
   useEffect(() => {
 
     fetchProfile();
@@ -45,8 +51,6 @@ function Profile() {
           "/auth/profile"
 
         );
-
-      console.log(res.data);
 
       setUser(res.data);
 
@@ -143,6 +147,55 @@ function Profile() {
   };
 
   // ======================
+  // CHANGE PASSWORD
+  // ======================
+
+  const changePassword = async () => {
+
+    try {
+
+      await api.put(
+
+        "/auth/change-password",
+
+        {
+
+          oldPassword,
+          newPassword
+
+        }
+
+      );
+
+      alert(
+
+        "Password changed"
+
+      );
+
+      setOldPassword("");
+
+      setNewPassword("");
+
+    }
+
+    catch (error) {
+
+      console.log(error);
+
+      alert(
+
+        error.response?.data?.message ||
+
+        "Change password failed"
+
+      );
+
+    }
+
+  };
+
+  // ======================
   // LOADING
   // ======================
 
@@ -208,6 +261,8 @@ function Profile() {
 
       </h1>
 
+      {/* AVATAR */}
+
       <img
 
         src={avatar}
@@ -229,6 +284,8 @@ function Profile() {
         }}
 
       />
+
+      {/* USERNAME */}
 
       <input
 
@@ -260,6 +317,8 @@ function Profile() {
 
       />
 
+      {/* EMAIL */}
+
       <input
 
         type="email"
@@ -289,6 +348,8 @@ function Profile() {
         }}
 
       />
+
+      {/* AVATAR URL */}
 
       <input
 
@@ -320,6 +381,8 @@ function Profile() {
 
       />
 
+      {/* SAVE PROFILE */}
+
       <button
 
         onClick={updateProfile}
@@ -336,13 +399,111 @@ function Profile() {
 
           borderRadius: "8px",
 
-          cursor: "pointer"
+          cursor: "pointer",
+
+          marginBottom: "40px"
 
         }}
 
       >
 
         Save Profile
+
+      </button>
+
+      {/* CHANGE PASSWORD */}
+
+      <h2>
+
+        Change Password
+
+      </h2>
+
+      <input
+
+        type="password"
+
+        placeholder="Old Password"
+
+        value={oldPassword}
+
+        onChange={(e) =>
+
+          setOldPassword(
+
+            e.target.value
+
+          )
+
+        }
+
+        style={{
+
+          width: "100%",
+
+          padding: "12px",
+
+          marginTop: "10px",
+
+          marginBottom: "10px"
+
+        }}
+
+      />
+
+      <input
+
+        type="password"
+
+        placeholder="New Password"
+
+        value={newPassword}
+
+        onChange={(e) =>
+
+          setNewPassword(
+
+            e.target.value
+
+          )
+
+        }
+
+        style={{
+
+          width: "100%",
+
+          padding: "12px",
+
+          marginBottom: "20px"
+
+        }}
+
+      />
+
+      <button
+
+        onClick={changePassword}
+
+        style={{
+
+          background: "green",
+
+          color: "white",
+
+          border: "none",
+
+          padding: "12px 20px",
+
+          borderRadius: "8px",
+
+          cursor: "pointer"
+
+        }}
+
+      >
+
+        Change Password
 
       </button>
 
