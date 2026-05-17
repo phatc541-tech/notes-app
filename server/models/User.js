@@ -36,7 +36,7 @@ const userSchema = new mongoose.Schema(
 
       default:
 
-        "https://via.placeholder.com/150"
+        "https://i.pravatar.cc/150"
 
     }
 
