@@ -4,9 +4,9 @@ const bcrypt = require("bcryptjs");
 
 const jwt = require("jsonwebtoken");
 
-// ==========================
+// ======================
 // REGISTER
-// ==========================
+// ======================
 
 const register = async (req, res) => {
 
@@ -18,7 +18,7 @@ const register = async (req, res) => {
       password
     } = req.body;
 
-    // CHECK EMAIL
+    // CHECK USER
 
     const existingUser =
       await User.findOne({ email });
@@ -27,7 +27,8 @@ const register = async (req, res) => {
 
       return res.status(400).json({
 
-        message: "Email already exists"
+        message:
+          "Email already exists"
 
       });
 
@@ -36,7 +37,10 @@ const register = async (req, res) => {
     // HASH PASSWORD
 
     const hashedPassword =
-      await bcrypt.hash(password, 10);
+      await bcrypt.hash(
+        password,
+        10
+      );
 
     // CREATE USER
 
@@ -81,7 +85,8 @@ const register = async (req, res) => {
 
     res.status(500).json({
 
-      message: "Server Error"
+      message:
+        "Server Error"
 
     });
 
@@ -89,9 +94,9 @@ const register = async (req, res) => {
 
 };
 
-// ==========================
+// ======================
 // LOGIN
-// ==========================
+// ======================
 
 const login = async (req, res) => {
 
@@ -111,7 +116,8 @@ const login = async (req, res) => {
 
       return res.status(400).json({
 
-        message: "User not found"
+        message:
+          "User not found"
 
       });
 
@@ -121,15 +127,18 @@ const login = async (req, res) => {
 
     const isMatch =
       await bcrypt.compare(
+
         password,
         user.password
+
       );
 
     if (!isMatch) {
 
       return res.status(400).json({
 
-        message: "Wrong password"
+        message:
+          "Wrong password"
 
       });
 
@@ -167,7 +176,8 @@ const login = async (req, res) => {
 
     res.status(500).json({
 
-      message: "Server Error"
+      message:
+        "Server Error"
 
     });
 
