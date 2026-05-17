@@ -24,7 +24,7 @@ app.use(
 
       "http://localhost:5173",
 
-      "https://notes-app-mu-hazel.vercel.app"
+      "https://notes-app-mu-hazel.vercel.app/"
 
     ],
 
