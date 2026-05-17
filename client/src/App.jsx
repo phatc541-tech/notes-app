@@ -14,6 +14,8 @@ import Home from "./pages/Home";
 
 import Profile from "./pages/Profile";
 
+import SharedNote from "./pages/SharedNote";
+
 function App() {
 
   return (
@@ -21,6 +23,8 @@ function App() {
     <BrowserRouter>
 
       <Routes>
+
+        {/* HOME */}
 
         <Route
 
@@ -30,6 +34,8 @@ function App() {
 
         />
 
+        {/* LOGIN */}
+
         <Route
 
           path="/login"
@@ -37,6 +43,8 @@ function App() {
           element={<Login />}
 
         />
+
+        {/* REGISTER */}
 
         <Route
 
@@ -46,11 +54,23 @@ function App() {
 
         />
 
+        {/* PROFILE */}
+
         <Route
 
           path="/profile"
 
           element={<Profile />}
+
+        />
+
+        {/* SHARED NOTE */}
+
+        <Route
+
+          path="/share/:id"
+
+          element={<SharedNote />}
 
         />
 
