@@ -26,6 +26,8 @@ const getNotes = async (req, res) => {
 
   catch (error) {
 
+    console.log(error);
+
     res.status(500).json({
 
       message: error.message
@@ -58,17 +60,18 @@ const createNote = async (req, res) => {
         title,
         content,
         labels,
+
         user: req.user.id
 
       });
-
-    // RETURN NOTE MỚI
 
     res.status(201).json(note);
 
   }
 
   catch (error) {
+
+    console.log(error);
 
     res.status(500).json({
 
@@ -94,7 +97,18 @@ const updateNote = async (req, res) => {
 
         req.params.id,
 
-        req.body,
+        {
+
+          title:
+            req.body.title,
+
+          content:
+            req.body.content,
+
+          labels:
+            req.body.labels
+
+        },
 
         {
 
@@ -109,6 +123,8 @@ const updateNote = async (req, res) => {
   }
 
   catch (error) {
+
+    console.log(error);
 
     res.status(500).json({
 
@@ -144,6 +160,8 @@ const deleteNote = async (req, res) => {
   }
 
   catch (error) {
+
+    console.log(error);
 
     res.status(500).json({
 
