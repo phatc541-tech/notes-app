@@ -13,15 +13,21 @@ const register = async (req, res) => {
   try {
 
     const {
+
       name,
       email,
       password
+
     } = req.body;
 
     // CHECK USER
 
     const existingUser =
-      await User.findOne({ email });
+      await User.findOne({
+
+        email
+
+      });
 
     if (existingUser) {
 
@@ -38,8 +44,11 @@ const register = async (req, res) => {
 
     const hashedPassword =
       await bcrypt.hash(
+
         password,
+
         10
+
       );
 
     // CREATE USER
@@ -48,8 +57,11 @@ const register = async (req, res) => {
       await User.create({
 
         name,
+
         email,
-        password: hashedPassword
+
+        password:
+          hashedPassword
 
       });
 
@@ -75,18 +87,22 @@ const register = async (req, res) => {
 
     res.status(201).json({
 
-      token
+      token,
+
+      user
 
     });
 
-  } catch (error) {
+  }
+
+  catch (error) {
 
     console.log(error);
 
     res.status(500).json({
 
       message:
-        "Server Error"
+        "Register failed"
 
     });
 
@@ -103,14 +119,20 @@ const login = async (req, res) => {
   try {
 
     const {
+
       email,
       password
+
     } = req.body;
 
     // FIND USER
 
     const user =
-      await User.findOne({ email });
+      await User.findOne({
+
+        email
+
+      });
 
     if (!user) {
 
@@ -129,6 +151,7 @@ const login = async (req, res) => {
       await bcrypt.compare(
 
         password,
+
         user.password
 
       );
@@ -166,18 +189,22 @@ const login = async (req, res) => {
 
     res.status(200).json({
 
-      token
+      token,
+
+      user
 
     });
 
-  } catch (error) {
+  }
+
+  catch (error) {
 
     console.log(error);
 
     res.status(500).json({
 
       message:
-        "Server Error"
+        "Login failed"
 
     });
 
@@ -185,9 +212,14 @@ const login = async (req, res) => {
 
 };
 
+// ======================
+// EXPORT
+// ======================
+
 module.exports = {
 
   register,
+
   login
 
 };
