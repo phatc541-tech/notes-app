@@ -1,14 +1,7 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import api from "../services/api";
 
 function Home() {
-
-  const navigate = useNavigate();
-
-  // =====================
-  // STATES
-  // =====================
 
   const [notes, setNotes] = useState([]);
 
@@ -20,200 +13,204 @@ function Home() {
 
   const [search, setSearch] = useState("");
 
-  const [viewMode, setViewMode] = useState("list");
+  const [viewMode, setViewMode] = useState("grid");
 
-  const [loading, setLoading] = useState(false);
+  // ======================
+  // FETCH NOTES
+  // ======================
 
-  // =====================
-  // TOKEN
-  // =====================
-
-  const token = localStorage.getItem("token");
-
-  // =====================
-  // GET NOTES
-  // =====================
-
-  const getNotes = async () => {
+  const fetchNotes = async () => {
 
     try {
 
-      const res = await api.get(
-        "/notes",
-        {
-          headers: {
-            Authorization: `Bearer ${token}`
-          }
-        }
-      );
+      const res = await api.get("/notes");
 
       setNotes(res.data);
 
-    } catch (error) {
+    }
+
+    catch (error) {
 
       console.log(error);
 
     }
-  };
 
-  // =====================
-  // LOAD NOTES
-  // =====================
+  };
 
   useEffect(() => {
 
-    if (!token) {
-
-      navigate("/login");
-
-    } else {
-
-      getNotes();
-
-    }
+    fetchNotes();
 
   }, []);
 
-  // =====================
-  // AUTOSAVE
-  // =====================
+  // ======================
+  // CREATE NOTE
+  // ======================
 
-  useEffect(() => {
+  const createNote = async () => {
 
-    if (
-      title.trim() === "" &&
-      content.trim() === ""
-    ) {
-      return;
+    try {
+
+      await api.post("/notes", {
+
+        title,
+        content,
+        labels
+
+      });
+
+      setTitle("");
+      setContent("");
+      setLabels("");
+
+      fetchNotes();
+
     }
 
-    setLoading(true);
+    catch (error) {
 
-    const timeout = setTimeout(async () => {
+      console.log(error);
 
-      try {
+    }
 
-        await api.post(
-          "/notes",
-          {
-            title,
-            content,
-            labels: labels
-              .split(",")
-              .map((item) => item.trim())
-          },
-          {
-            headers: {
-              Authorization: `Bearer ${token}`
-            }
-          }
-        );
+  };
 
-        getNotes();
-
-        setLoading(false);
-
-      } catch (error) {
-
-        console.log(error);
-
-        setLoading(false);
-
-      }
-
-    }, 1000);
-
-    return () => clearTimeout(timeout);
-
-  }, [title, content]);
-
-  // =====================
+  // ======================
   // DELETE NOTE
-  // =====================
+  // ======================
 
   const deleteNote = async (id) => {
 
     try {
 
-      await api.delete(
-        `/notes/${id}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`
-          }
-        }
-      );
+      await api.delete(`/notes/${id}`);
 
-      getNotes();
+      fetchNotes();
 
-    } catch (error) {
+    }
+
+    catch (error) {
 
       console.log(error);
 
     }
-  };
-
-  // =====================
-  // LOGOUT
-  // =====================
-
-  const logout = () => {
-
-    localStorage.removeItem("token");
-
-    navigate("/login");
 
   };
 
-  // =====================
+  // ======================
+  // UPDATE NOTE
+  // ======================
+
+  const updateNote = async (
+
+    id,
+    oldTitle
+
+  ) => {
+
+    const newTitle = prompt(
+
+      "Edit title",
+      oldTitle
+
+    );
+
+    if (!newTitle) return;
+
+    try {
+
+      await api.put(
+
+        `/notes/${id}`,
+
+        {
+
+          title: newTitle
+
+        }
+
+      );
+
+      fetchNotes();
+
+    }
+
+    catch (error) {
+
+      console.log(error);
+
+    }
+
+  };
+
+  // ======================
   // SEARCH
-  // =====================
+  // ======================
 
   const filteredNotes = notes.filter((note) =>
 
     note.title
-      .toLowerCase()
-      .includes(search.toLowerCase())
+      ?.toLowerCase()
+      .includes(
 
-    ||
+        search.toLowerCase()
 
-    note.content
-      .toLowerCase()
-      .includes(search.toLowerCase())
+      )
 
   );
 
   return (
 
-    <div
-      style={{
-        padding: "20px"
-      }}
-    >
+    <div style={{ padding: "20px" }}>
 
       {/* HEADER */}
 
       <div
+
         style={{
+
           display: "flex",
+
           justifyContent: "space-between",
-          alignItems: "center"
+
+          alignItems: "center",
+
+          marginBottom: "20px"
+
         }}
+
       >
 
         <h1>My Notes</h1>
 
         <button
-          onClick={logout}
-          style={{
-            background: "red",
-            color: "white",
-            border: "none",
-            padding: "10px 20px",
-            borderRadius: "5px"
+
+          onClick={() => {
+
+            localStorage.removeItem("token");
+
+            window.location.href = "/login";
+
           }}
+
+          style={{
+
+            background: "red",
+
+            color: "white",
+
+            border: "none",
+
+            padding: "10px",
+
+            borderRadius: "5px"
+
+          }}
+
         >
+
           Logout
+
         </button>
 
       </div>
@@ -221,224 +218,340 @@ function Home() {
       {/* CREATE NOTE */}
 
       <div
+
         style={{
+
           border: "1px solid #ccc",
+
           padding: "20px",
+
           borderRadius: "10px",
+
           marginBottom: "20px"
+
         }}
+
       >
 
         <input
+
           type="text"
+
           placeholder="Title"
+
           value={title}
+
           onChange={(e) =>
+
             setTitle(e.target.value)
+
           }
+
           style={{
+
             width: "100%",
+
             padding: "10px",
+
             marginBottom: "10px"
+
           }}
+
         />
 
         <textarea
-          placeholder="Content"
-          value={content}
-          onChange={(e) =>
-            setContent(e.target.value)
-          }
-          rows="10"
-          style={{
-            width: "100%",
-            padding: "10px"
-          }}
-        />
 
-        <br />
-        <br />
+          placeholder="Content"
+
+          value={content}
+
+          onChange={(e) =>
+
+            setContent(e.target.value)
+
+          }
+
+          style={{
+
+            width: "100%",
+
+            height: "150px",
+
+            padding: "10px",
+
+            marginBottom: "10px"
+
+          }}
+
+        />
 
         <input
+
           type="text"
-          placeholder="labels (study,work...)"
+
+          placeholder="Labels"
+
           value={labels}
+
           onChange={(e) =>
+
             setLabels(e.target.value)
+
           }
+
           style={{
+
             width: "100%",
-            padding: "10px"
+
+            padding: "10px",
+
+            marginBottom: "10px"
+
           }}
+
         />
 
-        <br />
-        <br />
+        <button
 
-        <p>
-          {loading
-            ? "Auto Saving..."
-            : "Saved"}
-        </p>
+          onClick={createNote}
+
+          style={{
+
+            background: "green",
+
+            color: "white",
+
+            border: "none",
+
+            padding: "10px",
+
+            borderRadius: "5px"
+
+          }}
+
+        >
+
+          Save
+
+        </button>
 
       </div>
 
       {/* SEARCH */}
 
       <input
+
         type="text"
+
         placeholder="Search..."
+
         value={search}
+
         onChange={(e) =>
+
           setSearch(e.target.value)
+
         }
+
         style={{
+
           width: "100%",
+
           padding: "10px",
+
           marginBottom: "20px"
+
         }}
+
       />
 
-      {/* VIEW MODE */}
+      {/* VIEW BUTTON */}
 
-      <div
-        style={{
-          marginBottom: "20px"
-        }}
-      >
+      <div style={{ marginBottom: "20px" }}>
 
         <button
+
           onClick={() =>
+
             setViewMode("list")
+
           }
+
           style={{
-            background: "#2563eb",
+
+            background: "blue",
+
             color: "white",
+
             border: "none",
-            padding: "10px 20px",
-            borderRadius: "5px"
+
+            padding: "10px",
+
+            borderRadius: "5px",
+
+            marginRight: "10px"
+
           }}
+
         >
+
           List
+
         </button>
 
         <button
+
           onClick={() =>
+
             setViewMode("grid")
+
           }
+
           style={{
-            background: "#16a34a",
+
+            background: "green",
+
             color: "white",
+
             border: "none",
-            padding: "10px 20px",
-            borderRadius: "5px",
-            marginLeft: "10px"
+
+            padding: "10px",
+
+            borderRadius: "5px"
+
           }}
+
         >
+
           Grid
+
         </button>
 
       </div>
 
       {/* NOTES */}
 
-      {
+      <div
 
-        filteredNotes.length > 0 ? (
+        style={{
+
+          display: "grid",
+
+          gridTemplateColumns:
+
+            viewMode === "grid"
+
+              ? "repeat(3, 1fr)"
+
+              : "1fr",
+
+          gap: "20px"
+
+        }}
+
+      >
+
+        {filteredNotes.map((note) => (
 
           <div
+
+            key={note._id}
+
             style={{
-              display: "grid",
-              gridTemplateColumns:
-                viewMode === "grid"
-                  ? "repeat(3, 1fr)"
-                  : "1fr",
-              gap: "20px"
+
+              border: "1px solid #ccc",
+
+              padding: "15px",
+
+              borderRadius: "10px"
+
             }}
+
           >
 
-            {
+            <h2>{note.title}</h2>
 
-              filteredNotes.map((note) => (
+            <p>{note.content}</p>
 
-                <div
-                  key={note._id}
-                  style={{
-                    border: "1px solid #ccc",
-                    padding: "15px",
-                    borderRadius: "10px"
-                  }}
-                >
+            <p>{note.labels}</p>
 
-                  <h2>
-                    {note.title}
-                  </h2>
+            {/* EDIT */}
 
-                  <p>
-                    {note.content}
-                  </p>
+            <button
 
-                  <div>
+              onClick={() =>
 
-                    {
+                updateNote(
 
-                      note.labels?.map(
-                        (label) => (
+                  note._id,
+                  note.title
 
-                          <span
-                            key={label}
-                            style={{
-                              background: "#ddd",
-                              padding: "5px 10px",
-                              borderRadius: "20px",
-                              marginRight: "10px"
-                            }}
-                          >
-                            {label}
-                          </span>
+                )
 
-                        )
-                      )
+              }
 
-                    }
+              style={{
 
-                  </div>
+                background: "orange",
 
-                  <br />
+                color: "white",
 
-                  <button
-                    onClick={() =>
-                      deleteNote(note._id)
-                    }
-                    style={{
-                      background: "red",
-                      color: "white",
-                      border: "none",
-                      padding: "10px",
-                      borderRadius: "5px"
-                    }}
-                  >
-                    Delete
-                  </button>
+                border: "none",
 
-                </div>
+                padding: "10px",
 
-              ))
+                borderRadius: "5px",
 
-            }
+                marginRight: "10px"
+
+              }}
+
+            >
+
+              Edit
+
+            </button>
+
+            {/* DELETE */}
+
+            <button
+
+              onClick={() =>
+
+                deleteNote(note._id)
+
+              }
+
+              style={{
+
+                background: "red",
+
+                color: "white",
+
+                border: "none",
+
+                padding: "10px",
+
+                borderRadius: "5px"
+
+              }}
+
+            >
+
+              Delete
+
+            </button>
 
           </div>
 
-        ) : (
+        ))}
 
-          <p>No notes found</p>
-
-        )
-
-      }
+      </div>
 
     </div>
+
   );
+
 }
 
 export default Home;
