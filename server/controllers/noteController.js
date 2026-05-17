@@ -8,13 +8,17 @@ const getNotes = async (req, res) => {
 
   try {
 
-    // CHỈ LẤY NOTE USER HIỆN TẠI
+    const notes =
 
-    const notes = await Note.find({
+      await Note.find({
 
-      user: req.user.id
+        user: req.user.id
 
-    });
+      }).sort({
+
+        createdAt: -1
+
+      });
 
     res.json(notes);
 
@@ -22,11 +26,9 @@ const getNotes = async (req, res) => {
 
   catch (error) {
 
-    console.log(error);
-
     res.status(500).json({
 
-      message: "Get notes failed"
+      message: error.message
 
     });
 
@@ -50,17 +52,17 @@ const createNote = async (req, res) => {
 
     } = req.body;
 
-    // TẠO NOTE THEO USER
+    const note =
+      await Note.create({
 
-    const note = await Note.create({
+        title,
+        content,
+        labels,
+        user: req.user.id
 
-      title,
-      content,
-      labels,
+      });
 
-      user: req.user.id
-
-    });
+    // RETURN NOTE MỚI
 
     res.status(201).json(note);
 
@@ -68,49 +70,9 @@ const createNote = async (req, res) => {
 
   catch (error) {
 
-    console.log(error);
-
     res.status(500).json({
 
-      message: "Create note failed"
-
-    });
-
-  }
-
-};
-
-// ======================
-// DELETE NOTE
-// ======================
-
-const deleteNote = async (req, res) => {
-
-  try {
-
-    await Note.findOneAndDelete({
-
-      _id: req.params.id,
-
-      user: req.user.id
-
-    });
-
-    res.json({
-
-      message: "Deleted"
-
-    });
-
-  }
-
-  catch (error) {
-
-    console.log(error);
-
-    res.status(500).json({
-
-      message: "Delete failed"
+      message: error.message
 
     });
 
@@ -126,16 +88,11 @@ const updateNote = async (req, res) => {
 
   try {
 
-    const note =
-      await Note.findOneAndUpdate(
+    const updatedNote =
 
-        {
+      await Note.findByIdAndUpdate(
 
-          _id: req.params.id,
-
-          user: req.user.id
-
-        },
+        req.params.id,
 
         req.body,
 
@@ -147,17 +104,15 @@ const updateNote = async (req, res) => {
 
       );
 
-    res.json(note);
+    res.json(updatedNote);
 
   }
 
   catch (error) {
 
-    console.log(error);
-
     res.status(500).json({
 
-      message: "Update failed"
+      message: error.message
 
     });
 
@@ -166,17 +121,45 @@ const updateNote = async (req, res) => {
 };
 
 // ======================
-// EXPORT
+// DELETE NOTE
 // ======================
+
+const deleteNote = async (req, res) => {
+
+  try {
+
+    await Note.findByIdAndDelete(
+
+      req.params.id
+
+    );
+
+    res.json({
+
+      message:
+        "Note deleted"
+
+    });
+
+  }
+
+  catch (error) {
+
+    res.status(500).json({
+
+      message: error.message
+
+    });
+
+  }
+
+};
 
 module.exports = {
 
   getNotes,
-
   createNote,
-
-  deleteNote,
-
-  updateNote
+  updateNote,
+  deleteNote
 
 };
