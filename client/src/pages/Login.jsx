@@ -6,7 +6,8 @@ import {
 
 import {
 
-  useNavigate
+  useNavigate,
+  Link
 
 } from "react-router-dom";
 
@@ -16,6 +17,10 @@ function Login() {
 
   const navigate =
     useNavigate();
+
+  // ======================
+  // STATES
+  // ======================
 
   const [email, setEmail] =
     useState("");
@@ -46,7 +51,9 @@ function Login() {
 
         );
 
+      // ======================
       // SAVE TOKEN
+      // ======================
 
       localStorage.setItem(
 
@@ -56,7 +63,9 @@ function Login() {
 
       );
 
+      // ======================
       // GO HOME
+      // ======================
 
       navigate("/");
 
@@ -84,99 +93,199 @@ function Login() {
 
       style={{
 
-        padding: "40px"
+        display: "flex",
+
+        justifyContent: "center",
+
+        alignItems: "center",
+
+        height: "100vh",
+
+        background: "#f5f5f5"
 
       }}
 
     >
 
-      <h1>
-
-        Login
-
-      </h1>
-
-      <input
-
-        type="email"
-
-        placeholder="Email"
-
-        value={email}
-
-        onChange={(e) =>
-
-          setEmail(
-            e.target.value
-          )
-
-        }
+      <div
 
         style={{
 
-          width: "300px",
+          background: "white",
 
-          padding: "12px",
+          padding: "40px",
 
-          marginBottom: "10px"
+          borderRadius: "12px",
 
-        }}
+          width: "350px",
 
-      />
+          boxShadow:
 
-      <br />
-
-      <input
-
-        type="password"
-
-        placeholder="Password"
-
-        value={password}
-
-        onChange={(e) =>
-
-          setPassword(
-            e.target.value
-          )
-
-        }
-
-        style={{
-
-          width: "300px",
-
-          padding: "12px",
-
-          marginBottom: "10px"
-
-        }}
-
-      />
-
-      <br />
-
-      <button
-
-        onClick={handleLogin}
-
-        style={{
-
-          padding: "12px 20px",
-
-          background: "blue",
-
-          color: "white",
-
-          border: "none"
+            "0 0 10px rgba(0,0,0,0.1)"
 
         }}
 
       >
 
-        Login
+        <h1
 
-      </button>
+          style={{
+
+            marginBottom: "20px",
+
+            textAlign: "center"
+
+          }}
+
+        >
+
+          Login
+
+        </h1>
+
+        {/* EMAIL */}
+
+        <input
+
+          type="email"
+
+          placeholder="Email"
+
+          value={email}
+
+          onChange={(e) =>
+
+            setEmail(
+
+              e.target.value
+
+            )
+
+          }
+
+          style={{
+
+            width: "100%",
+
+            padding: "12px",
+
+            marginBottom: "15px",
+
+            borderRadius: "8px",
+
+            border:
+
+              "1px solid #ccc"
+
+          }}
+
+        />
+
+        {/* PASSWORD */}
+
+        <input
+
+          type="password"
+
+          placeholder="Password"
+
+          value={password}
+
+          onChange={(e) =>
+
+            setPassword(
+
+              e.target.value
+
+            )
+
+          }
+
+          style={{
+
+            width: "100%",
+
+            padding: "12px",
+
+            marginBottom: "20px",
+
+            borderRadius: "8px",
+
+            border:
+
+              "1px solid #ccc"
+
+          }}
+
+        />
+
+        {/* BUTTON */}
+
+        <button
+
+          onClick={handleLogin}
+
+          style={{
+
+            width: "100%",
+
+            padding: "12px",
+
+            background: "blue",
+
+            color: "white",
+
+            border: "none",
+
+            borderRadius: "8px",
+
+            cursor: "pointer",
+
+            fontWeight: "bold"
+
+          }}
+
+        >
+
+          Login
+
+        </button>
+
+        {/* REGISTER */}
+
+        <p
+
+          style={{
+
+            marginTop: "20px",
+
+            textAlign: "center"
+
+          }}
+
+        >
+
+          Don't have an account?
+
+          <Link
+
+            to="/register"
+
+            style={{
+
+              marginLeft: "5px"
+
+            }}
+
+          >
+
+            Register
+
+          </Link>
+
+        </p>
+
+      </div>
 
     </div>
 
