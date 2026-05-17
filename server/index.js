@@ -20,23 +20,11 @@ app.use(express.json());
 // ROUTES
 // ======================
 
-const authRoutes = require(
-
-  "./routes/authRoutes"
-
-);
-
-const noteRoutes = require(
-
-  "./routes/noteRoutes"
-
-);
-
 app.use(
 
   "/api/auth",
 
-  authRoutes
+  require("./routes/authRoutes")
 
 );
 
@@ -44,62 +32,66 @@ app.use(
 
   "/api/notes",
 
-  noteRoutes
+  require("./routes/noteRoutes")
 
 );
 
 // ======================
-// TEST
+// TEST ROUTE
 // ======================
 
 app.get("/", (req, res) => {
 
-  res.send(
-
-    "API Running"
-
-  );
+  res.send("API Running");
 
 });
 
 // ======================
-// DATABASE
+// CONNECT DATABASE
 // ======================
 
-mongoose.connect(
+mongoose
 
-  process.env.MONGO_URI
+  .connect(process.env.MONGO_URI)
 
-)
+  .then(() => {
 
-.then(() => {
+    console.log(
 
-  console.log(
+      "MongoDB Connected"
 
-    "MongoDB Connected"
+    );
 
-  );
+  })
 
-  app.listen(
+  .catch((error) => {
 
-    process.env.PORT || 3001,
+    console.log(error);
 
-    () => {
+  });
 
-      console.log(
+// ======================
+// PORT
+// ======================
 
-        "Server Running"
+const PORT =
 
-      );
+  process.env.PORT ||
 
-    }
+  5000;
 
-  );
+app.listen(
 
-})
+  PORT,
 
-.catch((error) => {
+  () => {
 
-  console.log(error);
+    console.log(
 
-});
+      `Server running on port ${PORT}`
+
+    );
+
+  }
+
+);
