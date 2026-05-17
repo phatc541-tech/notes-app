@@ -9,7 +9,7 @@ const api = axios.create({
 });
 
 // ======================
-// ADD TOKEN
+// TOKEN
 // ======================
 
 api.interceptors.request.use(
@@ -23,8 +23,6 @@ api.interceptors.request.use(
         "token"
 
       );
-
-    // add token
 
     if (token) {
 

@@ -6,8 +6,8 @@ const {
 
   register,
   login,
-
   getProfile,
+  updateProfile,
   changePassword
 
 } = require(
@@ -51,7 +51,7 @@ router.post(
 );
 
 // ======================
-// PROFILE
+// GET PROFILE
 // ======================
 
 router.get(
@@ -61,6 +61,20 @@ router.get(
   protect,
 
   getProfile
+
+);
+
+// ======================
+// UPDATE PROFILE
+// ======================
+
+router.put(
+
+  "/profile",
+
+  protect,
+
+  updateProfile
 
 );
 
