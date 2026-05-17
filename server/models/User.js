@@ -5,9 +5,7 @@ const mongoose = require("mongoose");
 // ======================
 
 const userSchema =
-new mongoose.Schema(
-
-  {
+  new mongoose.Schema({
 
     name: {
 
@@ -35,22 +33,16 @@ new mongoose.Schema(
 
     }
 
-  },
-
-  {
-
-    timestamps: true
-
-  }
-
-);
+  });
 
 // ======================
 // EXPORT
 // ======================
 
 module.exports =
-mongoose.model(
-  "User",
-  userSchema
-);
+  mongoose.model(
+
+    "User",
+    userSchema
+
+  );
