@@ -1,39 +1,65 @@
 const jwt = require("jsonwebtoken");
 
-const protect = (req, res, next) => {
+const protect = (
+
+  req,
+  res,
+  next
+
+) => {
 
   try {
 
     // lấy token
-    const token = req.headers.authorization;
+
+    const authHeader =
+      req.headers.authorization;
 
     // không có token
-    if (!token) {
+
+    if (!authHeader) {
 
       return res.status(401).json({
+
         message: "No token"
+
       });
 
     }
 
+    // Bearer token
+
+    const token =
+      authHeader.split(" ")[1];
+
     // verify token
+
     const decoded = jwt.verify(
+
       token,
-      "secretkey"
+
+      process.env.JWT_SECRET
+
     );
 
     // lưu user
+
     req.user = decoded;
 
     next();
 
-  } catch (error) {
+  }
+
+  catch (error) {
 
     res.status(401).json({
+
       message: "Invalid token"
+
     });
 
   }
+
 };
 
 module.exports = protect;
