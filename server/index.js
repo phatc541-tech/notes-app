@@ -7,6 +7,16 @@ const mongoose = require("mongoose");
 const cors = require("cors");
 
 // ======================
+// ROUTES
+// ======================
+
+const authRoutes =
+  require("./routes/authRoutes");
+
+const noteRoutes =
+  require("./routes/noteRoutes");
+
+// ======================
 // APP
 // ======================
 
@@ -16,32 +26,7 @@ const app = express();
 // CORS
 // ======================
 
-app.use(
-
-  cors({
-
-    origin: [
-
-      "http://localhost:5173",
-
-      "https://notes-app-mu-hazel.vercel.app/"
-
-    ],
-
-    methods: [
-
-      "GET",
-      "POST",
-      "PUT",
-      "DELETE"
-
-    ],
-
-    credentials: true
-
-  })
-
-);
+app.use(cors());
 
 // ======================
 // JSON
@@ -50,14 +35,8 @@ app.use(
 app.use(express.json());
 
 // ======================
-// ROUTES
+// API ROUTES
 // ======================
-
-const authRoutes =
-  require("./routes/authRoutes");
-
-const noteRoutes =
-  require("./routes/noteRoutes");
 
 app.use(
   "/api/auth",
@@ -68,6 +47,16 @@ app.use(
   "/api/notes",
   noteRoutes
 );
+
+// ======================
+// TEST ROUTE
+// ======================
+
+app.get("/", (req, res) => {
+
+  res.send("API Running");
+
+});
 
 // ======================
 // MONGODB
@@ -90,16 +79,6 @@ mongoose.connect(
 .catch((error) => {
 
   console.log(error);
-
-});
-
-// ======================
-// TEST ROUTE
-// ======================
-
-app.get("/", (req, res) => {
-
-  res.send("API Running");
 
 });
 
