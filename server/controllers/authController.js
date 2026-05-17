@@ -1,13 +1,14 @@
-const jwt = require("jsonwebtoken");
+const User = require("../models/User");
 
 const bcrypt = require("bcryptjs");
 
-const User = require("../models/User");
+const jwt = require("jsonwebtoken");
 
-// =========================
+// ======================
 // REGISTER
-// =========================
-const registerUser = async (req, res) => {
+// ======================
+
+const register = async (req, res) => {
 
   try {
 
@@ -17,10 +18,8 @@ const registerUser = async (req, res) => {
       password
     } = req.body;
 
-    // check email tồn tại
-    const userExists = await User.findOne({
-      email
-    });
+    const userExists =
+      await User.findOne({ email });
 
     if (userExists) {
 
@@ -30,30 +29,33 @@ const registerUser = async (req, res) => {
 
     }
 
-    // hash password
-    const hashedPassword = await bcrypt.hash(
-      password,
-      10
-    );
+    const salt =
+      await bcrypt.genSalt(10);
 
-    // create user
-    const user = await User.create({
+    const hashedPassword =
+      await bcrypt.hash(
+        password,
+        salt
+      );
 
-      name,
-      email,
+    const user =
+      await User.create({
 
-      password: hashedPassword
+        name,
 
-    });
+        email,
 
-    // create token
+        password: hashedPassword
+
+      });
+
     const token = jwt.sign(
 
       {
         id: user._id
       },
 
-      "secretkey",
+      process.env.JWT_SECRET,
 
       {
         expiresIn: "7d"
@@ -63,8 +65,6 @@ const registerUser = async (req, res) => {
 
     res.status(201).json({
 
-      message: "Register Success",
-
       token,
 
       user
@@ -78,12 +78,14 @@ const registerUser = async (req, res) => {
     });
 
   }
+
 };
 
-// =========================
+// ======================
 // LOGIN
-// =========================
-const loginUser = async (req, res) => {
+// ======================
+
+const login = async (req, res) => {
 
   try {
 
@@ -92,45 +94,38 @@ const loginUser = async (req, res) => {
       password
     } = req.body;
 
-    // tìm user
-    const user = await User.findOne({
-      email
-    });
+    const user =
+      await User.findOne({ email });
 
-    // không có user
     if (!user) {
 
-      return res.status(404).json({
-        message: "User not found"
+      return res.status(400).json({
+        message: "Invalid email"
       });
 
     }
 
-    // compare password
-    const isMatch = await bcrypt.compare(
+    const isMatch =
+      await bcrypt.compare(
+        password,
+        user.password
+      );
 
-      password,
-      user.password
-
-    );
-
-    // sai password
     if (!isMatch) {
 
       return res.status(400).json({
-        message: "Wrong password"
+        message: "Invalid password"
       });
 
     }
 
-    // tạo token
     const token = jwt.sign(
 
       {
         id: user._id
       },
 
-      "secretkey",
+      process.env.JWT_SECRET,
 
       {
         expiresIn: "7d"
@@ -138,9 +133,7 @@ const loginUser = async (req, res) => {
 
     );
 
-    res.status(200).json({
-
-      message: "Login Success",
+    res.json({
 
       token,
 
@@ -155,11 +148,13 @@ const loginUser = async (req, res) => {
     });
 
   }
+
 };
 
 module.exports = {
 
-  registerUser,
-  loginUser
+  register,
+
+  login
 
 };
