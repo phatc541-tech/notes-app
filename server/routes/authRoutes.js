@@ -8,7 +8,9 @@ const {
   login,
 
   getProfile,
-  updateProfile
+  updateProfile,
+
+  changePassword
 
 } = require(
 
@@ -51,7 +53,7 @@ router.post(
 );
 
 // ======================
-// PROFILE
+// GET PROFILE
 // ======================
 
 router.get(
@@ -64,6 +66,10 @@ router.get(
 
 );
 
+// ======================
+// UPDATE PROFILE
+// ======================
+
 router.put(
 
   "/profile",
@@ -71,6 +77,20 @@ router.put(
   protect,
 
   updateProfile
+
+);
+
+// ======================
+// CHANGE PASSWORD
+// ======================
+
+router.put(
+
+  "/change-password",
+
+  protect,
+
+  changePassword
 
 );
 

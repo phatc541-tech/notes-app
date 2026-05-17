@@ -5,7 +5,7 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
 // ======================
-// TOKEN
+// GENERATE TOKEN
 // ======================
 
 const generateToken = (id) => {
@@ -223,7 +223,7 @@ const login = async (
 };
 
 // ======================
-// PROFILE
+// GET PROFILE
 // ======================
 
 const getProfile = async (
@@ -242,6 +242,18 @@ const getProfile = async (
         req.user.id
 
       ).select("-password");
+
+    if (!user) {
+
+      return res.status(404).json({
+
+        message:
+
+          "User not found"
+
+      });
+
+    }
 
     res.json(user);
 
@@ -318,7 +330,23 @@ const updateProfile = async (
 
       await user.save();
 
-    res.json(updatedUser);
+    res.json({
+
+      _id: updatedUser._id,
+
+      username:
+
+        updatedUser.username,
+
+      email:
+
+        updatedUser.email,
+
+      avatar:
+
+        updatedUser.avatar
+
+    });
 
   }
 
@@ -338,12 +366,118 @@ const updateProfile = async (
 
 };
 
+// ======================
+// CHANGE PASSWORD
+// ======================
+
+const changePassword = async (
+
+  req,
+  res
+
+) => {
+
+  try {
+
+    const {
+
+      oldPassword,
+      newPassword
+
+    } = req.body;
+
+    const user =
+
+      await User.findById(
+
+        req.user.id
+
+      );
+
+    if (!user) {
+
+      return res.status(404).json({
+
+        message:
+
+          "User not found"
+
+      });
+
+    }
+
+    const isMatch =
+
+      await bcrypt.compare(
+
+        oldPassword,
+
+        user.password
+
+      );
+
+    if (!isMatch) {
+
+      return res.status(400).json({
+
+        message:
+
+          "Old password incorrect"
+
+      });
+
+    }
+
+    const salt =
+
+      await bcrypt.genSalt(10);
+
+    user.password =
+
+      await bcrypt.hash(
+
+        newPassword,
+
+        salt
+
+      );
+
+    await user.save();
+
+    res.json({
+
+      message:
+
+        "Password changed"
+
+    });
+
+  }
+
+  catch (error) {
+
+    console.log(error);
+
+    res.status(500).json({
+
+      message:
+
+        "Change password failed"
+
+    });
+
+  }
+
+};
+
 module.exports = {
 
   register,
   login,
 
   getProfile,
-  updateProfile
+  updateProfile,
+
+  changePassword
 
 };

@@ -64,7 +64,7 @@ const protect = async (
 
       console.log(error);
 
-      res.status(401).json({
+      return res.status(401).json({
 
         message:
 
@@ -78,7 +78,7 @@ const protect = async (
 
   if (!token) {
 
-    res.status(401).json({
+    return res.status(401).json({
 
       message:
 
