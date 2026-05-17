@@ -6,9 +6,9 @@ function Home() {
 
   const navigate = useNavigate();
 
-  // ======================
+  // =====================
   // STATES
-  // ======================
+  // =====================
 
   const [notes, setNotes] = useState([]);
 
@@ -24,15 +24,15 @@ function Home() {
 
   const [loading, setLoading] = useState(false);
 
-  // ======================
+  // =====================
   // TOKEN
-  // ======================
+  // =====================
 
   const token = localStorage.getItem("token");
 
-  // ======================
+  // =====================
   // GET NOTES
-  // ======================
+  // =====================
 
   const getNotes = async () => {
 
@@ -56,9 +56,9 @@ function Home() {
     }
   };
 
-  // ======================
+  // =====================
   // LOAD NOTES
-  // ======================
+  // =====================
 
   useEffect(() => {
 
@@ -74,9 +74,9 @@ function Home() {
 
   }, []);
 
-  // ======================
+  // =====================
   // AUTOSAVE
-  // ======================
+  // =====================
 
   useEffect(() => {
 
@@ -109,7 +109,7 @@ function Home() {
           }
         );
 
-        await getNotes();
+        getNotes();
 
         setLoading(false);
 
@@ -127,9 +127,9 @@ function Home() {
 
   }, [title, content]);
 
-  // ======================
+  // =====================
   // DELETE NOTE
-  // ======================
+  // =====================
 
   const deleteNote = async (id) => {
 
@@ -153,9 +153,9 @@ function Home() {
     }
   };
 
-  // ======================
+  // =====================
   // LOGOUT
-  // ======================
+  // =====================
 
   const logout = () => {
 
@@ -165,9 +165,9 @@ function Home() {
 
   };
 
-  // ======================
+  // =====================
   // SEARCH
-  // ======================
+  // =====================
 
   const filteredNotes = notes.filter((note) =>
 
@@ -342,96 +342,100 @@ function Home() {
 
       {/* NOTES */}
 
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns:
-            viewMode === "grid"
-              ? "repeat(3, 1fr)"
-              : "1fr",
-          gap: "20px"
-        }}
-      >
+      {
 
-        {
+        filteredNotes.length > 0 ? (
 
-          filteredNotes.length > 0 ? (
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns:
+                viewMode === "grid"
+                  ? "repeat(3, 1fr)"
+                  : "1fr",
+              gap: "20px"
+            }}
+          >
 
-            filteredNotes.map((note) => (
+            {
 
-              <div
-                key={note._id}
-                style={{
-                  border: "1px solid #ccc",
-                  padding: "15px",
-                  borderRadius: "10px"
-                }}
-              >
+              filteredNotes.map((note) => (
 
-                <h2>
-                  {note.title}
-                </h2>
+                <div
+                  key={note._id}
+                  style={{
+                    border: "1px solid #ccc",
+                    padding: "15px",
+                    borderRadius: "10px"
+                  }}
+                >
 
-                <p>
-                  {note.content}
-                </p>
+                  <h2>
+                    {note.title}
+                  </h2>
 
-                <div>
+                  <p>
+                    {note.content}
+                  </p>
 
-                  {
+                  <div>
 
-                    note.labels?.map(
-                      (label) => (
+                    {
 
-                        <span
-                          key={label}
-                          style={{
-                            background: "#ddd",
-                            padding: "5px 10px",
-                            borderRadius: "20px",
-                            marginRight: "10px"
-                          }}
-                        >
-                          {label}
-                        </span>
+                      note.labels?.map(
+                        (label) => (
 
+                          <span
+                            key={label}
+                            style={{
+                              background: "#ddd",
+                              padding: "5px 10px",
+                              borderRadius: "20px",
+                              marginRight: "10px"
+                            }}
+                          >
+                            {label}
+                          </span>
+
+                        )
                       )
-                    )
 
-                  }
+                    }
+
+                  </div>
+
+                  <br />
+
+                  <button
+                    onClick={() =>
+                      deleteNote(note._id)
+                    }
+                    style={{
+                      background: "red",
+                      color: "white",
+                      border: "none",
+                      padding: "10px",
+                      borderRadius: "5px"
+                    }}
+                  >
+                    Delete
+                  </button>
 
                 </div>
 
-                <br />
+              ))
 
-                <button
-                  onClick={() =>
-                    deleteNote(note._id)
-                  }
-                  style={{
-                    background: "red",
-                    color: "white",
-                    border: "none",
-                    padding: "10px",
-                    borderRadius: "5px"
-                  }}
-                >
-                  Delete
-                </button>
+            }
 
-              </div>
+          </div>
 
-            ))
+        ) : (
 
-          ) : (
+          <p>No notes found</p>
 
-            <p>No notes found</p>
+        )
 
-          )
-
-        }
-
-      </div>
+      }
 
     </div>
   );
