@@ -5,11 +5,24 @@ const router = express.Router();
 const {
 
   register,
-  login
+  login,
+
+  getProfile,
+  changePassword
 
 } = require(
 
   "../controllers/authController"
+
+);
+
+const {
+
+  protect
+
+} = require(
+
+  "../middleware/authMiddleware"
 
 );
 
@@ -34,6 +47,34 @@ router.post(
   "/login",
 
   login
+
+);
+
+// ======================
+// PROFILE
+// ======================
+
+router.get(
+
+  "/profile",
+
+  protect,
+
+  getProfile
+
+);
+
+// ======================
+// CHANGE PASSWORD
+// ======================
+
+router.put(
+
+  "/change-password",
+
+  protect,
+
+  changePassword
 
 );
 

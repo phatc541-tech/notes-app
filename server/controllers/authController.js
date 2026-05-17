@@ -1,4 +1,8 @@
-const User = require("../models/User");
+const User = require(
+
+  "../models/User"
+
+);
 
 const bcrypt = require("bcryptjs");
 
@@ -12,11 +16,7 @@ const generateToken = (id) => {
 
   return jwt.sign(
 
-    {
-
-      id
-
-    },
+    { id },
 
     process.env.JWT_SECRET,
 
@@ -34,7 +34,12 @@ const generateToken = (id) => {
 // REGISTER
 // ======================
 
-const register = async (req, res) => {
+const register = async (
+
+  req,
+  res
+
+) => {
 
   try {
 
@@ -45,8 +50,6 @@ const register = async (req, res) => {
       password
 
     } = req.body;
-
-    // check user
 
     const userExists =
 
@@ -61,15 +64,15 @@ const register = async (req, res) => {
       return res.status(400).json({
 
         message:
+
           "User already exists"
 
       });
 
     }
 
-    // hash password
-
     const salt =
+
       await bcrypt.genSalt(10);
 
     const hashedPassword =
@@ -77,41 +80,35 @@ const register = async (req, res) => {
       await bcrypt.hash(
 
         password,
+
         salt
 
       );
 
-    // create user
-
     const user =
+
       await User.create({
 
         username,
         email,
 
         password:
+
           hashedPassword
 
       });
-
-    // response
 
     res.status(201).json({
 
       _id: user._id,
 
-      username:
-        user.username,
+      username: user.username,
 
       email: user.email,
 
       token:
 
-        generateToken(
-
-          user._id
-
-        )
+        generateToken(user._id)
 
     });
 
@@ -135,7 +132,12 @@ const register = async (req, res) => {
 // LOGIN
 // ======================
 
-const login = async (req, res) => {
+const login = async (
+
+  req,
+  res
+
+) => {
 
   try {
 
@@ -146,25 +148,27 @@ const login = async (req, res) => {
 
     } = req.body;
 
-    // find user
-
     const user =
+
       await User.findOne({
 
         email
 
       });
 
-    // check password
-
     if (
 
       user &&
 
-      await bcrypt.compare(
+      (
 
-        password,
-        user.password
+        await bcrypt.compare(
+
+          password,
+
+          user.password
+
+        )
 
       )
 
@@ -174,18 +178,15 @@ const login = async (req, res) => {
 
         _id: user._id,
 
-        username:
-          user.username,
+        username: user.username,
 
         email: user.email,
 
+        avatar: user.avatar,
+
         token:
 
-          generateToken(
-
-            user._id
-
-          )
+          generateToken(user._id)
 
       });
 
@@ -196,6 +197,7 @@ const login = async (req, res) => {
       res.status(401).json({
 
         message:
+
           "Invalid email or password"
 
       });
@@ -218,9 +220,141 @@ const login = async (req, res) => {
 
 };
 
+// ======================
+// GET PROFILE
+// ======================
+
+const getProfile = async (
+
+  req,
+  res
+
+) => {
+
+  try {
+
+    const user =
+
+      await User.findById(
+
+        req.user.id
+
+      ).select("-password");
+
+    res.json(user);
+
+  }
+
+  catch (error) {
+
+    console.log(error);
+
+    res.status(500).json({
+
+      message: error.message
+
+    });
+
+  }
+
+};
+
+// ======================
+// CHANGE PASSWORD
+// ======================
+
+const changePassword = async (
+
+  req,
+  res
+
+) => {
+
+  try {
+
+    const {
+
+      oldPassword,
+      newPassword
+
+    } = req.body;
+
+    const user =
+
+      await User.findById(
+
+        req.user.id
+
+      );
+
+    const isMatch =
+
+      await bcrypt.compare(
+
+        oldPassword,
+
+        user.password
+
+      );
+
+    if (!isMatch) {
+
+      return res.status(400).json({
+
+        message:
+
+          "Old password incorrect"
+
+      });
+
+    }
+
+    const salt =
+
+      await bcrypt.genSalt(10);
+
+    user.password =
+
+      await bcrypt.hash(
+
+        newPassword,
+
+        salt
+
+      );
+
+    await user.save();
+
+    res.json({
+
+      message:
+
+        "Password changed"
+
+    });
+
+  }
+
+  catch (error) {
+
+    console.log(error);
+
+    res.status(500).json({
+
+      message: error.message
+
+    });
+
+  }
+
+};
+
 module.exports = {
 
   register,
-  login
+  login,
+
+  getProfile,
+  changePassword
 
 };

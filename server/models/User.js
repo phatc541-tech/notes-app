@@ -1,13 +1,10 @@
 const mongoose = require("mongoose");
 
-// ======================
-// USER SCHEMA
-// ======================
+const userSchema = new mongoose.Schema(
 
-const userSchema =
-  new mongoose.Schema({
+  {
 
-    name: {
+    username: {
 
       type: String,
 
@@ -31,18 +28,32 @@ const userSchema =
 
       required: true
 
+    },
+
+    avatar: {
+
+      type: String,
+
+      default:
+
+        "https://via.placeholder.com/150"
+
     }
 
-  });
+  },
 
-// ======================
-// EXPORT
-// ======================
+  {
 
-module.exports =
-  mongoose.model(
+    timestamps: true
 
-    "User",
-    userSchema
+  }
 
-  );
+);
+
+module.exports = mongoose.model(
+
+  "User",
+
+  userSchema
+
+);
